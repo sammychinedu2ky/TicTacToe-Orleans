@@ -1,10 +1,17 @@
+
+import { auth } from "@/auth.config";
 import Header from "@/components/header";
+import StartGame from "@/components/start-game";
+import { SessionProvider } from "next-auth/react";
 import Image from "next/image";
 
-export default function Home() {
+export default async function Home() {
+  const session = await auth()
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between">
-      <Header/>
+    <main >
+      <SessionProvider session={session}>
+        <StartGame/>
+      </SessionProvider>
     </main>
   );
 }

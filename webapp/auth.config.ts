@@ -6,7 +6,8 @@ import NextAuth from "next-auth";
 export const authOptions  = {
     callbacks: {
       authorized({request,auth}){
-      const protectedRoutes = ["/gameroom","/history"]
+        console.log("authorized",request,auth)
+      const protectedRoutes = ["/game-room","/history"]
       const isLoggedIn = !!auth
       if(protectedRoutes.includes(request.nextUrl.pathname)){
         if(isLoggedIn) return true

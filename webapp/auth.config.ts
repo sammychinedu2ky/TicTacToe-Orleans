@@ -4,6 +4,17 @@ import type {NextAuthConfig} from "next-auth"
 import NextAuth from "next-auth";
 
 export const authOptions  = {
+    callbacks: {
+      authorized({request,auth}){
+      const protectedRoutes = ["/gameroom","/history"]
+      const isLoggedIn = !!auth
+      if(protectedRoutes.includes(request.nextUrl.pathname)){
+        if(isLoggedIn) return true
+        return false;
+      }
+      return true
+    }
+    },
     providers: [
         Github
     ],

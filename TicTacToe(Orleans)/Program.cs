@@ -1,38 +1,48 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using TicTacToe_Orleans_.Model;
+using TicTacToe_Orleans_.Endpoints;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using TicTacToe_Orleans_.Authorization;
+using Microsoft.AspNetCore.Authorization;
+using Npgsql;
 var builder = WebApplication.CreateBuilder(args);
 
-
-
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("ApplicationDbContext") ?? throw new InvalidOperationException("Connection string 'ApplicationDbContext' not found.")));
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.Authority = builder.Configuration["Authority"];
+        options.Audience = builder.Configuration["Audience"];
+        
+    });
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy(AuthSecretRequirement.Policy, r =>
+    {
+        r.AddRequirements(new AuthSecretRequirement(builder.Configuration["AUTH_SECRET"]!));
+    });
+});
+builder.Services.AddSingleton<IAuthorizationHandler, AuthSecretHandler>();
+builder.Services.AddHttpContextAccessor();
 // Add services to the container.
 
 var app = builder.Build();
 
 
 
-// Configure the HTTP request pipeline.
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
 
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-});
+
+app.MapUserEndpoints();
+
+app.MapInviteEndpoints();
+
+app.MapGamePlayEndpoints();
 
 app.Run();
 
-internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+

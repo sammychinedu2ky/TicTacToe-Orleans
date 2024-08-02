@@ -16,11 +16,18 @@ export const authOptions = {
       return true
     },
     async jwt({ token, user }) {
-        //console.log(token)
-        console.log(token)
-      if (!token?.newUser) {
+        console.log('tokoen in ', token)
+      if (token.newUser == undefined) {
         token.newUser = false
         // add to database
+        await fetch('http://localhost:3000/api/user', {
+          method: 'POST',
+          headers: new Headers({
+            'Content-Type': 'application/json',
+            'Auth-Secret': process.env.AUTH_SECRET!
+          }),
+          body: JSON.stringify({ Id: user.email, Name: user.name })
+        })
         console.log('new user')
         console.log(token)
       }

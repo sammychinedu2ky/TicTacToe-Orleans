@@ -20,14 +20,20 @@ export const authOptions = {
       if (token.newUser == undefined) {
         token.newUser = false
         // add to database
-        await fetch('http://localhost:3000/api/user', {
-          method: 'POST',
-          headers: new Headers({
-            'Content-Type': 'application/json',
-            'Auth-Secret': process.env.AUTH_SECRET!
-          }),
-          body: JSON.stringify({ Id: user.email, Name: user.name })
-        })
+        try{
+          await fetch('http://localhost:5103/api/user', {
+            method: 'POST',
+            headers: new Headers({
+              'Content-Type': 'application/json',
+              'Auth-Secret': process.env.AUTH_SECRET!
+            }),
+            body: JSON.stringify({ Id: user.email, Name: user.name })
+          })
+        }
+        catch(e){
+          console.log(e)
+        }
+      
         console.log('new user')
         console.log(token)
       }
@@ -43,6 +49,9 @@ export const authOptions = {
   cookies: {
     sessionToken: {
       name: "authToken",
+      options:{
+        
+      }
     }
   },
   jwt: {

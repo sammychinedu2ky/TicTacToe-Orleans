@@ -21,6 +21,7 @@ export default async function Header() {
     }
     const signOutFromGitHub = async () => {
         "use server"
+        console.log("signing out from github ...............")
         return signOut()
     }
     return (
@@ -46,7 +47,7 @@ export default async function Header() {
                                     </div>
                                     <div className="pb-3 pl-5 pr-5 pt-2  hover:bg-red-500">
                                         <form action={signOutFromGitHub}>
-                                            <button>Logout</button>
+                                            <button type="submit" className="w-full h-full">Logouts</button>
                                         </form>
                                     </div>
                                 </div>

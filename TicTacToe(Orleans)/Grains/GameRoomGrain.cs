@@ -54,7 +54,7 @@ namespace TicTacToe_Orleans_.Grains
             {
                 await _hubContext.Groups.AddToGroupAsync(connectionId, this.GetPrimaryKey().ToString());
                 await connectionGrain.AddUserAsync(null, connectionId);
-
+                await _hubContext.Clients.Client(connectionId).ReceiveGameStateAsync(this.GetPrimaryKey(), State);
             }
         }
         public void AssignState(string userId)

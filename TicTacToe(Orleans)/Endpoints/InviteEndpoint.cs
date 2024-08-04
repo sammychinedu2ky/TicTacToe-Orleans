@@ -11,13 +11,13 @@ namespace TicTacToe_Orleans_.Endpoints
 
         group.MapGet("/", async (ApplicationDbContext db) =>
         {
-            return await db.Invite.ToListAsync();
+            return await db.Invites.ToListAsync();
         })
         .WithName("GetAllInvites");
 
         group.MapGet("/{id}", async Task<Results<Ok<Invite>, NotFound>> (Guid id, ApplicationDbContext db) =>
         {
-            return await db.Invite.AsNoTracking()
+            return await db.Invites.AsNoTracking()
                 .FirstOrDefaultAsync(model => model.Id == id)
                 is Invite model
                     ? TypedResults.Ok(model)
@@ -27,7 +27,7 @@ namespace TicTacToe_Orleans_.Endpoints
 
         group.MapPut("/{id}", async Task<Results<Ok, NotFound>> (Guid id, Invite invite, ApplicationDbContext db) =>
         {
-            var affected = await db.Invite
+            var affected = await db.Invites
                 .Where(model => model.Id == id)
                 .ExecuteUpdateAsync(setters => setters
                   .SetProperty(m => m.Id, invite.Id)
@@ -43,7 +43,7 @@ namespace TicTacToe_Orleans_.Endpoints
 
         group.MapPost("/", async (Invite invite, ApplicationDbContext db) =>
         {
-            db.Invite.Add(invite);
+            db.Invites.Add(invite);
             await db.SaveChangesAsync();
             return TypedResults.Created($"/api/Invite/{invite.Id}",invite);
         })
@@ -51,7 +51,7 @@ namespace TicTacToe_Orleans_.Endpoints
 
         group.MapDelete("/{id}", async Task<Results<Ok, NotFound>> (Guid id, ApplicationDbContext db) =>
         {
-            var affected = await db.Invite
+            var affected = await db.Invites
                 .Where(model => model.Id == id)
                 .ExecuteDeleteAsync();
             return affected == 1 ? TypedResults.Ok() : TypedResults.NotFound();

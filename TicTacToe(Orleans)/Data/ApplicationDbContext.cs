@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using TicTacToe_Orleans_.Model;
 
 public class ApplicationDbContext : DbContext
@@ -13,10 +8,10 @@ public class ApplicationDbContext : DbContext
     {
     }
 
-    public DbSet<GameRoom> GamePlay { get; set; } = default!;
+    public DbSet<GameRoom> GameRooms { get; set; } = default!;
 
-    public DbSet<User> User { get; set; } = default!;
+    public DbSet<User> Users { get; set; } = default!;
 
-    public DbSet<Invite> Invite { get; set; } = default!;
+    public DbSet<Invite> Invites { get; set; } = default!;
    
 }

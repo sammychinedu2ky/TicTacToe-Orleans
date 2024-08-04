@@ -10,6 +10,12 @@ using Microsoft.IdentityModel.Logging;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.IdentityModel.Tokens.Jwt;
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseOrleans(static siloBuilder =>
+{
+    siloBuilder.UseLocalhostClustering();
+    siloBuilder.AddMemoryGrainStorage("urls");
+});
 IdentityModelEventSource.ShowPII = true;
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("ApplicationDbContext") ?? throw new InvalidOperationException("Connection string 'ApplicationDbContext' not found."),
@@ -54,7 +60,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
                     var principal = tokenHandler.ValidateToken(jwtToken, validationParameters, out _);
                     context.Principal = principal;
                 }
-                catch (Exception ex)
+                catch
                 {
                     context.RejectPrincipal();
                    

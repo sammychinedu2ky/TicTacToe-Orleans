@@ -13,7 +13,7 @@ public class ApplicationDbContext : DbContext
     {
     }
 
-    public DbSet<GamePlay> GamePlay { get; set; } = default!;
+    public DbSet<GameRoom> GamePlay { get; set; } = default!;
 
     public DbSet<User> User { get; set; } = default!;
 

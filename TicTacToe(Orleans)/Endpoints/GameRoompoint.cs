@@ -6,9 +6,9 @@ namespace TicTacToe_Orleans_.Endpoints
 
 
 
-public static class GamePlayEndpoints
+public static class GameRoomEndpoints
 {
-	public static void MapGamePlayEndpoints (this IEndpointRouteBuilder routes)
+	public static void MapGameRoomEndpoints (this IEndpointRouteBuilder routes)
     {
         var group = routes.MapGroup("/api/GamePlay");
 
@@ -18,17 +18,17 @@ public static class GamePlayEndpoints
         })
         .WithName("GetAllGamePlays");
 
-        group.MapGet("/{id}", async Task<Results<Ok<GamePlay>, NotFound>> (Guid id, ApplicationDbContext db) =>
+        group.MapGet("/{id}", async Task<Results<Ok<GameRoom>, NotFound>> (Guid id, ApplicationDbContext db) =>
         {
             return await db.GamePlay.AsNoTracking()
                 .FirstOrDefaultAsync(model => model.Id == id)
-                is GamePlay model
+                is GameRoom model
                     ? TypedResults.Ok(model)
                     : TypedResults.NotFound();
         })
         .WithName("GetGamePlayById");
 
-        group.MapPut("/{id}", async Task<Results<Ok, NotFound>> (Guid id, GamePlay gamePlay, ApplicationDbContext db) =>
+        group.MapPut("/{id}", async Task<Results<Ok, NotFound>> (Guid id, GameRoom gamePlay, ApplicationDbContext db) =>
         {
             var affected = await db.GamePlay
                 .Where(model => model.Id == id)
@@ -44,7 +44,7 @@ public static class GamePlayEndpoints
         })
         .WithName("UpdateGamePlay");
 
-        group.MapPost("/", async (GamePlay gamePlay, ApplicationDbContext db) =>
+        group.MapPost("/", async (GameRoom gamePlay, ApplicationDbContext db) =>
         {
             db.GamePlay.Add(gamePlay);
             await db.SaveChangesAsync();

@@ -7,6 +7,7 @@ export const authOptions = {
   callbacks: {
     authorized({ request, auth }) {
       //console.log('authoriszed')
+      // remove game room from being protected
       const protectedRoutes = ["/game-room", "/history"]
       const isLoggedIn = !!auth
       if (protectedRoutes.includes(request.nextUrl.pathname)) {
@@ -50,7 +51,7 @@ export const authOptions = {
     sessionToken: {
       name: "authToken",
       options:{
-        
+
       }
     }
   },

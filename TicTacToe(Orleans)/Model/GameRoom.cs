@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 namespace TicTacToe_Orleans_.Model
 {
-    public class GamePlay
+    public class GameRoom
     {
         public Guid Id { get; set; }
         public string X { get; set; } = string.Empty;

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using TicTacToe_Orleans_.Model;
 using TicTacToe_Orleans_.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Security.Claims;
 namespace TicTacToe_Orleans_.Endpoints
 {
     public static class UserEndpoints
@@ -29,6 +30,10 @@ namespace TicTacToe_Orleans_.Endpoints
 
             group.MapGet("/", async (ApplicationDbContext db, HttpContext context) =>
             {
+                var identity = context.User.Identity as ClaimsIdentity;
+                var email = identity.FindFirst(ClaimTypes.Email)?.Value;
+                var name = identity.FindFirst(ClaimTypes.Name)?.Value;
+               
                 return await db.User.ToListAsync();
             })
             .WithName("GetAllUsers").RequireAuthorization(JwtBearerDefaults.AuthenticationScheme);

@@ -4,7 +4,7 @@ namespace TicTacToe_Orleans_.Grains
 {
     public interface IGameRoom
     {
-        public Task JoinRoom(string userId, string userName);
+        public Task JoinRoom(string userId, string userName, string connectionId);
         public string X { get; set; }
         public string O { get; set; }
         public string Winner { get; set; }

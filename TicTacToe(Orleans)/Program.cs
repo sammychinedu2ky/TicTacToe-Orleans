@@ -104,7 +104,7 @@ app.MapUserEndpoints();
 
 app.MapInviteEndpoints();
 
-app.MapGamePlayEndpoints();
+app.MapGameRoomEndpoints();
 
 app.Run();
 

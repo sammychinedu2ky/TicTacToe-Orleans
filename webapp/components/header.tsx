@@ -1,5 +1,7 @@
 import { auth, signIn, signOut } from "@/auth.config";
 import Link from "next/link";
+
+import { redirect } from "next/navigation";
 export default async function Header() {
     const session = await auth()
     const authenticated = !!session
@@ -22,7 +24,8 @@ export default async function Header() {
     const signOutFromGitHub = async () => {
         "use server"
         console.log("signing out from github ...............")
-        return signOut()
+       return redirect("/api/auth/signout");
+      //return signOut()
     }
     return (
         <>

@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@microsoft/signalr':
+        specifier: ^8.0.7
+        version: 8.0.7
       '@types/uuid':
         specifier: ^10.0.0
         version: 10.0.0
@@ -26,6 +29,9 @@ importers:
       react-dom:
         specifier: 19.0.0-rc-f38c22b244-20240704
         version: 19.0.0-rc-f38c22b244-20240704(react@19.0.0-rc-f38c22b244-20240704)
+      swr:
+        specifier: ^2.2.5
+        version: 2.2.5(react@19.0.0-rc-f38c22b244-20240704)
       uuid:
         specifier: ^10.0.0
         version: 10.0.0
@@ -250,6 +256,9 @@ packages:
   '@levischuck/tiny-cbor@0.2.2':
     resolution: {integrity: sha512-f5CnPw997Y2GQ8FAvtuVVC19FX8mwNNC+1XJcIi16n/LTJifKO6QBgGLgN3YEmqtGMk17SKSuoWES3imJVxAVw==}
 
+  '@microsoft/signalr@8.0.7':
+    resolution: {integrity: sha512-PHcdMv8v5hJlBkRHAuKG5trGViQEkPYee36LnJQx4xHOQ5LL4X0nEWIxOp5cCtZ7tu+30quz5V3k0b1YNuc6lw==}
+
   '@next/env@15.0.0-canary.56':
     resolution: {integrity: sha512-NHKKx0jysNIcnx5c35TbK4nTUjp0HU4Ba7yaQBQDnU7/03TyhGR6WdL2SqsC6ex9mDleaozBPUcKPktOM3C4uA==}
 
@@ -411,6 +420,10 @@ packages:
 
   '@ungap/structured-clone@1.2.0':
     resolution: {integrity: sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==}
+
+  abort-controller@3.0.0:
+    resolution: {integrity: sha512-h8lQ8tacZYnR3vNQTgibj+tODHI5/+l06Au2Pcriv/Gmet0eaj4TwWH41sO9wnHDiQsEj19q0drzdWdeAHtweg==}
+    engines: {node: '>=6.5'}
 
   acorn-jsx@5.3.2:
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
@@ -819,6 +832,14 @@ packages:
     resolution: {integrity: sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g==}
     engines: {node: '>=0.10.0'}
 
+  event-target-shim@5.0.1:
+    resolution: {integrity: sha512-i/2XbnSz/uxRCU6+NdVJgKWDTM427+MqYbkQzD321DuCQJUqOuJKIA0IM2+W2xtYHdKOmZ4dR6fExsd4SXL+WQ==}
+    engines: {node: '>=6'}
+
+  eventsource@2.0.2:
+    resolution: {integrity: sha512-IzUmBGPR3+oUG9dUeXynyNmf91/3zUSJg1lCktzKw47OXuhco54U3r9B7O4XX+Rb1Itm9OZ2b0RkTs10bICOxA==}
+    engines: {node: '>=12.0.0'}
+
   fast-deep-equal@3.1.3:
     resolution: {integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==}
 
@@ -834,6 +855,9 @@ packages:
 
   fastq@1.17.1:
     resolution: {integrity: sha512-sRVD3lWVIXWg6By68ZN7vho9a1pQcN/WBFaAAsDDFzlJjvoGx0P8z7V1t72grFJfJhu3YPZBuu25f7Kaw2jN1w==}
+
+  fetch-cookie@2.2.0:
+    resolution: {integrity: sha512-h9AgfjURuCgA2+2ISl8GbavpUdR+WGAM2McW/ovn4tVccegp8ZqCKWSBR8uRdM8dDNlx5WdKRWxBYUwteLDCNQ==}
 
   file-entry-cache@6.0.1:
     resolution: {integrity: sha512-7Gps/XWymbLk2QLYK4NzpMOrYjMhdIxXuIvy2QBsLE6ljuodKvdkWs/cpyJJ3CVIVpH0Oi1Hvg1ovbMzLdFBBg==}
@@ -1450,6 +1474,9 @@ packages:
   prop-types@15.8.1:
     resolution: {integrity: sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==}
 
+  psl@1.9.0:
+    resolution: {integrity: sha512-E/ZsdU4HLs/68gYzgGTkMicWTLPdAftJLfJFlLUAAKZGkStNU72sZjT66SnMDVOfOWY/YAoiD7Jxa9iHvngcag==}
+
   punycode@2.3.1:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
     engines: {node: '>=6'}
@@ -1460,6 +1487,9 @@ packages:
   pvutils@1.1.3:
     resolution: {integrity: sha512-pMpnA0qRdFp32b1sJl1wOJNxZLQ2cbQx+k6tjNtZ8CpvVhNqEPRgivZ2WOUev2YMajecdH7ctUPDvEe87nariQ==}
     engines: {node: '>=6.0.0'}
+
+  querystringify@2.2.0:
+    resolution: {integrity: sha512-FIqgj2EUvTa7R50u0rGsyTftzjYmv/a3hO345bZNrqabNqjtgiDMgmo4mkUjd+nzU5oF3dClKqFIPUKybUyqoQ==}
 
   queue-microtask@1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
@@ -1490,6 +1520,9 @@ packages:
   regexp.prototype.flags@1.5.2:
     resolution: {integrity: sha512-NcDiDkTLuPR+++OCKB0nWafEmhg/Da8aUPLPMQbK+bxKKCm1/S5he+AqYa4PlMCVBalb4/yxIRub6qkEx5yJbw==}
     engines: {node: '>= 0.4'}
+
+  requires-port@1.0.0:
+    resolution: {integrity: sha512-KigOCHcocU3XODJxsu8i/j8T9tzT4adHiecwORRQ0ZZFcp7ahwXuRU1m+yuO90C5ZUyGeGfocHDI14M3L3yDAQ==}
 
   resolve-from@4.0.0:
     resolution: {integrity: sha512-pb/MYmXstAkysRFx8piNI1tGFNQIFA3vkE3Gq4EuA1dF6gHp/+vgZqsCGJapvy8N3Q+4o7FwvquPJcnZ7RYy4g==}
@@ -1537,6 +1570,9 @@ packages:
     resolution: {integrity: sha512-oVekP1cKtI+CTDvHWYFUcMtsK/00wmAEfyqKfNdARm8u1wNVhSgaX7A8d4UuIlUI5e84iEwOhs7ZPYRmzU9U6A==}
     engines: {node: '>=10'}
     hasBin: true
+
+  set-cookie-parser@2.7.0:
+    resolution: {integrity: sha512-lXLOiqpkUumhRdFF3k1osNXCy9akgx/dyPZ5p8qAg9seJzXr5ZrlqZuWIMuY6ejOsVLE6flJ5/h3lsn57fQ/PQ==}
 
   set-function-length@1.2.2:
     resolution: {integrity: sha512-pgRc4hJ4/sNjWCSS9AmnS40x3bNMDTknHgL5UaMBTMyJnU90EgWh1Rz+MC9eFu4BuN/UwZjKQuY/1v3rM7HMfg==}
@@ -1656,6 +1692,11 @@ packages:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
 
+  swr@2.2.5:
+    resolution: {integrity: sha512-QtxqyclFeAsxEUeZIYmsaQ0UjimSq1RZ9Un7I68/0ClKK/U3LoyQunwkQfJZr2fc22DfIXLNDc2wFyTEikCUpg==}
+    peerDependencies:
+      react: ^16.11.0 || ^17.0.0 || ^18.0.0
+
   tailwindcss@3.4.7:
     resolution: {integrity: sha512-rxWZbe87YJb4OcSopb7up2Ba4U82BoiSGUdoDr3Ydrg9ckxFS/YWsvhN323GMcddgU65QRy7JndC7ahhInhvlQ==}
     engines: {node: '>=14.0.0'}
@@ -1678,6 +1719,10 @@ packages:
   to-regex-range@5.0.1:
     resolution: {integrity: sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==}
     engines: {node: '>=8.0'}
+
+  tough-cookie@4.1.4:
+    resolution: {integrity: sha512-Loo5UUvLD9ScZ6jh8beX1T6sO1w2/MpCRpEP7V280GKMVUQ0Jzar2U3UJPsrdbziLEMMhu3Ujnq//rhiFuIeag==}
+    engines: {node: '>=6'}
 
   tr46@0.0.3:
     resolution: {integrity: sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==}
@@ -1732,8 +1777,20 @@ packages:
   undici-types@5.26.5:
     resolution: {integrity: sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==}
 
+  universalify@0.2.0:
+    resolution: {integrity: sha512-CJ1QgKmNg3CwvAv/kOFmtnEN05f0D/cn9QntgNOQlQF9dgvVTHj3t+8JPdjqawCHk7V/KA+fbUqzZ9XWhcqPUg==}
+    engines: {node: '>= 4.0.0'}
+
   uri-js@4.4.1:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
+
+  url-parse@1.5.10:
+    resolution: {integrity: sha512-WypcfiRhfeUP9vvF0j6rw0J3hrWrw6iZv3+22h6iRMJ/8z1Tj6XfLP4DsUix5MhMPnXpiHDoKyoZ/bdCkwBCiQ==}
+
+  use-sync-external-store@1.2.2:
+    resolution: {integrity: sha512-PElTlVMwpblvbNqQ82d2n6RjStvdSoNe9FG28kNfz3WiXilJm4DdNkEzRhCZuIDwY8U08WVihhGR5iRqAwfDiw==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
 
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
@@ -1782,6 +1839,18 @@ packages:
 
   wrappy@1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
+
+  ws@7.5.10:
+    resolution: {integrity: sha512-+dbF1tHwZpXcbOJdVOkzLDxZP1ailvSxM6ZweXTegylPny803bFhA+vqBYw4s31NSAk4S2Qz+AKXK9a4wkdjcQ==}
+    engines: {node: '>=8.3.0'}
+    peerDependencies:
+      bufferutil: ^4.0.1
+      utf-8-validate: ^5.0.2
+    peerDependenciesMeta:
+      bufferutil:
+        optional: true
+      utf-8-validate:
+        optional: true
 
   yaml@2.5.0:
     resolution: {integrity: sha512-2wWLbGbYDiSqqIKoPjar3MPgB94ErzCtrNE1FdqGuaO0pi2JGjmE8aW8TDZwzU7vuxcGRdL/4gPQwQ7hD5AMSw==}
@@ -1954,6 +2023,18 @@ snapshots:
 
   '@levischuck/tiny-cbor@0.2.2':
     optional: true
+
+  '@microsoft/signalr@8.0.7':
+    dependencies:
+      abort-controller: 3.0.0
+      eventsource: 2.0.2
+      fetch-cookie: 2.2.0
+      node-fetch: 2.7.0
+      ws: 7.5.10
+    transitivePeerDependencies:
+      - bufferutil
+      - encoding
+      - utf-8-validate
 
   '@next/env@15.0.0-canary.56': {}
 
@@ -2130,6 +2211,10 @@ snapshots:
       eslint-visitor-keys: 3.4.3
 
   '@ungap/structured-clone@1.2.0': {}
+
+  abort-controller@3.0.0:
+    dependencies:
+      event-target-shim: 5.0.1
 
   acorn-jsx@5.3.2(acorn@8.12.1):
     dependencies:
@@ -2744,6 +2829,10 @@ snapshots:
 
   esutils@2.0.3: {}
 
+  event-target-shim@5.0.1: {}
+
+  eventsource@2.0.2: {}
+
   fast-deep-equal@3.1.3: {}
 
   fast-glob@3.3.2:
@@ -2761,6 +2850,11 @@ snapshots:
   fastq@1.17.1:
     dependencies:
       reusify: 1.0.4
+
+  fetch-cookie@2.2.0:
+    dependencies:
+      set-cookie-parser: 2.7.0
+      tough-cookie: 4.1.4
 
   file-entry-cache@6.0.1:
     dependencies:
@@ -3195,7 +3289,6 @@ snapshots:
   node-fetch@2.7.0:
     dependencies:
       whatwg-url: 5.0.0
-    optional: true
 
   normalize-path@3.0.0: {}
 
@@ -3358,6 +3451,8 @@ snapshots:
       object-assign: 4.1.1
       react-is: 16.13.1
 
+  psl@1.9.0: {}
+
   punycode@2.3.1: {}
 
   pvtsutils@1.3.5:
@@ -3367,6 +3462,8 @@ snapshots:
 
   pvutils@1.1.3:
     optional: true
+
+  querystringify@2.2.0: {}
 
   queue-microtask@1.2.3: {}
 
@@ -3403,6 +3500,8 @@ snapshots:
       define-properties: 1.2.1
       es-errors: 1.3.0
       set-function-name: 2.0.2
+
+  requires-port@1.0.0: {}
 
   resolve-from@4.0.0: {}
 
@@ -3448,6 +3547,8 @@ snapshots:
   semver@6.3.1: {}
 
   semver@7.6.3: {}
+
+  set-cookie-parser@2.7.0: {}
 
   set-function-length@1.2.2:
     dependencies:
@@ -3611,6 +3712,12 @@ snapshots:
 
   supports-preserve-symlinks-flag@1.0.0: {}
 
+  swr@2.2.5(react@19.0.0-rc-f38c22b244-20240704):
+    dependencies:
+      client-only: 0.0.1
+      react: 19.0.0-rc-f38c22b244-20240704
+      use-sync-external-store: 1.2.2(react@19.0.0-rc-f38c22b244-20240704)
+
   tailwindcss@3.4.7:
     dependencies:
       '@alloc/quick-lru': 5.2.0
@@ -3654,8 +3761,14 @@ snapshots:
     dependencies:
       is-number: 7.0.0
 
-  tr46@0.0.3:
-    optional: true
+  tough-cookie@4.1.4:
+    dependencies:
+      psl: 1.9.0
+      punycode: 2.3.1
+      universalify: 0.2.0
+      url-parse: 1.5.10
+
+  tr46@0.0.3: {}
 
   ts-api-utils@1.3.0(typescript@5.5.4):
     dependencies:
@@ -3721,22 +3834,31 @@ snapshots:
 
   undici-types@5.26.5: {}
 
+  universalify@0.2.0: {}
+
   uri-js@4.4.1:
     dependencies:
       punycode: 2.3.1
+
+  url-parse@1.5.10:
+    dependencies:
+      querystringify: 2.2.0
+      requires-port: 1.0.0
+
+  use-sync-external-store@1.2.2(react@19.0.0-rc-f38c22b244-20240704):
+    dependencies:
+      react: 19.0.0-rc-f38c22b244-20240704
 
   util-deprecate@1.0.2: {}
 
   uuid@10.0.0: {}
 
-  webidl-conversions@3.0.1:
-    optional: true
+  webidl-conversions@3.0.1: {}
 
   whatwg-url@5.0.0:
     dependencies:
       tr46: 0.0.3
       webidl-conversions: 3.0.1
-    optional: true
 
   which-boxed-primitive@1.0.2:
     dependencies:
@@ -3795,6 +3917,8 @@ snapshots:
       strip-ansi: 7.1.0
 
   wrappy@1.0.2: {}
+
+  ws@7.5.10: {}
 
   yaml@2.5.0: {}
 

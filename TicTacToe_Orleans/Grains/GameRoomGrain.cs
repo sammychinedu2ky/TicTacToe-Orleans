@@ -32,7 +32,7 @@ namespace TicTacToe_Orleans.Grains
                     _gameRoomType = gameRoom!.Type;
                 }
             }
-            var connectionGrain = _grainFactory.GetGrain<IConnectionGrain>(userId);
+            var connectionGrain = _grainFactory!.GetGrain<IConnectionGrain>(userId);
             if (!String.IsNullOrEmpty(userId))
             {
                 var check = await connectionGrain.IsConnectedAsync(userId);

@@ -33,9 +33,7 @@ namespace TicTacToe_Orleans.Endpoints
                       .SetProperty(m => m.Id, gamePlay.Id)
                       .SetProperty(m => m.X, gamePlay.X)
                       .SetProperty(m => m.O, gamePlay.O)
-                      .SetProperty(m => m.Winner, gamePlay.Winner)
                       .SetProperty(m => m.Board, gamePlay.Board)
-                      .SetProperty(m => m.Moves, gamePlay.Moves)
                       .SetProperty(m => m.Type, gamePlay.Type)
                       );
                 return affected == 1 ? TypedResults.Ok() : TypedResults.NotFound();

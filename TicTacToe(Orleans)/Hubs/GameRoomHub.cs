@@ -6,7 +6,7 @@ using TicTacToe_Orleans_.Grains;
 
 namespace TicTacToe_Orleans_.Hubs
 {
-    public  class MyConnections { };
+    public class MyConnections { };
     public class GameRoomHub : Hub<IGameRoomClient>
     {
         private ApplicationDbContext _dbContext;
@@ -38,9 +38,10 @@ namespace TicTacToe_Orleans_.Hubs
         {
             if (Context.User!.Identity!.IsAuthenticated)
             {
-                var userId = Context.User.Identity.Name;
-               
-             await  Groups.AddToGroupAsync(Context.ConnectionId, userId);
+                var identity = Context?.User?.Identity as ClaimsIdentity;
+                var email = identity?.FindFirst(ClaimTypes.Email)?.Value!;
+
+                await Groups.AddToGroupAsync(Context!.ConnectionId, email);
             }
             await base.OnConnectedAsync();
         }
@@ -49,16 +50,17 @@ namespace TicTacToe_Orleans_.Hubs
             if (!Context.User!.Identity!.IsAuthenticated)
             {
                 var connectionGrain = _grainFactory.GetGrain<IConnectionGrain>(nameof(MyConnections));
-                await connectionGrain.RemoveUserAsync(null,Context.ConnectionId);
+                await connectionGrain.RemoveUserAsync(null, Context.ConnectionId);
             }
             else
             {
-                var userId = Context.User.Identity.Name;
+                var identity = Context?.User?.Identity as ClaimsIdentity;
+                var email = identity?.FindFirst(ClaimTypes.Email)?.Value!;
                 var connectionId = Context.ConnectionId;
-                var connectionGrain = _grainFactory.GetGrain<IConnectionGrain>(userId);
-                await connectionGrain.RemoveUserAsync(userId, connectionId);
+                var connectionGrain = _grainFactory.GetGrain<IConnectionGrain>(nameof(MyConnections));
+                await connectionGrain.RemoveUserAsync(email, connectionId);
             }
-           await base.OnDisconnectedAsync(exception);
+            await base.OnDisconnectedAsync(exception);
         }
     }
 }

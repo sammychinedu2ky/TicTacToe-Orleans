@@ -10,7 +10,7 @@ public static class GameRoomEndpoints
 {
 	public static void MapGameRoomEndpoints (this IEndpointRouteBuilder routes)
     {
-        var group = routes.MapGroup("/api/GamePlay");
+        var group = routes.MapGroup("/api/gameroom");
 
         group.MapGet("/", async (ApplicationDbContext db) =>
         {
@@ -45,11 +45,16 @@ public static class GameRoomEndpoints
         })
         .WithName("UpdateGameRoom");
 
-        group.MapPost("/", async (GameRoom gamePlay, ApplicationDbContext db) =>
+        group.MapPost("/", async (GameRoomDto gameRoomDto, ApplicationDbContext db) =>
         {
-            db.GameRooms.Add(gamePlay);
+            var gameRoom = new GameRoom
+            {
+                Id = Guid.NewGuid(),
+                Type = gameRoomDto.Type
+            };
+            db.GameRooms.Add(gameRoom);
             await db.SaveChangesAsync();
-            return TypedResults.Created($"/api/GamePlay/{gamePlay.Id}",gamePlay);
+            return TypedResults.Created($"/api/GamePlay/{gameRoom.Id}",gameRoom);
         })
         .WithName("CreateGameRoom");
 
@@ -63,4 +68,11 @@ public static class GameRoomEndpoints
         .WithName("DeleteGamePlay");
     }
 	
-}}
+}
+
+    internal class GameRoomDto
+    {
+        public Guid Id { get; set; }
+        public GameRoomType Type { get; set; }
+    }
+}

@@ -1,5 +1,6 @@
 ﻿namespace TicTacToe_Orleans_.Grains
 {
+    [GenerateSerializer]
     public class GameRoomState
     {
         public string? X { get; set; }

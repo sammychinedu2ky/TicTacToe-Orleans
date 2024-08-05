@@ -9,13 +9,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.IdentityModel.Tokens.Jwt;
+using TicTacToe_Orleans_.Hubs;
+using Orleans.Runtime;
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Host.UseOrleans(static siloBuilder =>
-{
-    siloBuilder.UseLocalhostClustering();
-    siloBuilder.AddMemoryGrainStorage("urls");
-});
 IdentityModelEventSource.ShowPII = true;
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("ApplicationDbContext") ?? throw new InvalidOperationException("Connection string 'ApplicationDbContext' not found."),
@@ -95,8 +92,13 @@ builder.Services.AddAuthorization(options =>
 });
 builder.Services.AddSingleton<IAuthorizationHandler, AuthSecretHandler>();
 builder.Services.AddHttpContextAccessor();
+builder.Host.UseOrleans(static siloBuilder =>
+{
+    siloBuilder.UseLocalhostClustering();
+    siloBuilder.AddMemoryGrainStorage("urls");
 
-
+});
+builder.Services.AddSignalR();
 var app = builder.Build();
 
 
@@ -105,7 +107,7 @@ app.MapUserEndpoints();
 app.MapInviteEndpoints();
 
 app.MapGameRoomEndpoints();
-
+app.MapHub<GameRoomHub>("/gameRoomHub");
 app.Run();
 
 

@@ -10,7 +10,7 @@ namespace TicTacToe_Orleans_.Grains
     {
         private IDbContextFactory<ApplicationDbContext> _dbContextFactory;
         private readonly IHubContext<GameRoomHub, IGameRoomClient> _hubContext;
-        private readonly IGrainFactory _grainFactory;
+        private readonly IGrainFactory? _grainFactory;
         private GameRoomType? _gameRoomType { get; set; }
         public GameRoomState State { get; set; } = new GameRoomState();
 
@@ -22,7 +22,7 @@ namespace TicTacToe_Orleans_.Grains
             _hubContext = hubContext;
             this._grainFactory = grainFactory;
         }
-        public async Task JoinRoom(string userId, string userName, string connectionId)
+        public async Task JoinRoom(string? userId, string? userName, string connectionId)
         {
             if (_gameRoomType is null)
             {

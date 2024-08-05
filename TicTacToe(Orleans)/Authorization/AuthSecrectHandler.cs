@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 
-namespace TicTacToe_Orleans_.Authorization
+namespace TicTacToe_Orleans.Authorization
 {
     public class AuthSecretHandler : AuthorizationHandler<AuthSecretRequirement>
     {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.AspNetCore.Http.HttpResults;
-namespace TicTacToe_Orleans_.Model
+namespace TicTacToe_Orleans.Model
 {
     public class Invite
     {

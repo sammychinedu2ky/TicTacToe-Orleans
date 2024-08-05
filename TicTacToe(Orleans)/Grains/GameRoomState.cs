@@ -1,4 +1,4 @@
-﻿namespace TicTacToe_Orleans_.Grains
+﻿namespace TicTacToe_Orleans.Grains
 {
     [GenerateSerializer]
     public class GameRoomState

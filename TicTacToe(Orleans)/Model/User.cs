@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Polly;
 
-namespace TicTacToe_Orleans_.Model
+namespace TicTacToe_Orleans.Model
 {
     public class User
     {

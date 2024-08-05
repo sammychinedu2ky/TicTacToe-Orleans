@@ -1,6 +1,6 @@
-﻿using TicTacToe_Orleans_.Grains;
+﻿using TicTacToe_Orleans.Grains;
 
-namespace TicTacToe_Orleans_.Hubs
+namespace TicTacToe_Orleans.Hubs
 {
     public interface IGameRoomClient
     {

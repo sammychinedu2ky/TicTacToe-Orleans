@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TicTacToe_Orleans_.Model;
+using TicTacToe_Orleans.Model;
 
 public class ApplicationDbContext : DbContext
 {

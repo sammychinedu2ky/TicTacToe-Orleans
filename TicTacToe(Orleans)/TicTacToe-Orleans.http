@@ -1,6 +1,6 @@
-@TicTacToe_Orleans__HostAddress = http://localhost:5103
+@TicTacToe_Orleans_HostAddress = http://localhost:5103
 
-GET {{TicTacToe_Orleans__HostAddress}}/weatherforecast/
+GET {{TicTacToe_Orleans_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###

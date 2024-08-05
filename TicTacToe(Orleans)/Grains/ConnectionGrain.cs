@@ -1,6 +1,6 @@
-﻿using TicTacToe_Orleans_.Model;
+﻿using TicTacToe_Orleans.Model;
 
-namespace TicTacToe_Orleans_.Grains
+namespace TicTacToe_Orleans.Grains
 {
     public class ConnectionGrain : IConnectionGrain
     {

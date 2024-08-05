@@ -2,9 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using Polly;
 using System.Security.Claims;
-using TicTacToe_Orleans_.Grains;
+using TicTacToe_Orleans.Grains;
 
-namespace TicTacToe_Orleans_.Hubs
+namespace TicTacToe_Orleans.Hubs
 {
     public class MyConnections { };
     public class GameRoomHub : Hub<IGameRoomClient>

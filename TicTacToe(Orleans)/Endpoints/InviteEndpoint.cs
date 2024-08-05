@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http.HttpResults;
-using TicTacToe_Orleans_.Model;
-namespace TicTacToe_Orleans_.Endpoints
+using TicTacToe_Orleans.Model;
+namespace TicTacToe_Orleans.Endpoints
 {
     public static class InviteEndpoints
     {

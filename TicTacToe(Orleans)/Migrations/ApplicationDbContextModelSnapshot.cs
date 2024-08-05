@@ -8,7 +8,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace TicTacToe_Orleans_.Migrations
+namespace TicTacToe_Orleans.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -22,7 +22,7 @@ namespace TicTacToe_Orleans_.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("TicTacToe_Orleans_.Model.GameRoom", b =>
+            modelBuilder.Entity("TicTacToe_Orleans.Model.GameRoom", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -57,7 +57,7 @@ namespace TicTacToe_Orleans_.Migrations
                     b.ToTable("GameRooms");
                 });
 
-            modelBuilder.Entity("TicTacToe_Orleans_.Model.Invite", b =>
+            modelBuilder.Entity("TicTacToe_Orleans.Model.Invite", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -85,7 +85,7 @@ namespace TicTacToe_Orleans_.Migrations
                     b.ToTable("Invites");
                 });
 
-            modelBuilder.Entity("TicTacToe_Orleans_.Model.User", b =>
+            modelBuilder.Entity("TicTacToe_Orleans.Model.User", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");

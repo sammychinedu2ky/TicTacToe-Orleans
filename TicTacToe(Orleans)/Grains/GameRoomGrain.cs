@@ -1,10 +1,10 @@
 ﻿
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using TicTacToe_Orleans_.Hubs;
-using TicTacToe_Orleans_.Model;
+using TicTacToe_Orleans.Hubs;
+using TicTacToe_Orleans.Model;
 
-namespace TicTacToe_Orleans_.Grains
+namespace TicTacToe_Orleans.Grains
 {
     public class GameRoomGrain : IGameRoomGrain
     {

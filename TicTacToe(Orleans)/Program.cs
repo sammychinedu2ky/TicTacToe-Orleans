@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using TicTacToe_Orleans_.Endpoints;
+using TicTacToe_Orleans.Endpoints;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using TicTacToe_Orleans_.Authorization;
+using TicTacToe_Orleans.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.IdentityModel.Tokens.Jwt;
-using TicTacToe_Orleans_.Hubs;
+using TicTacToe_Orleans.Hubs;
 using Orleans.Runtime;
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http.HttpResults;
-using TicTacToe_Orleans_.Model;
-using TicTacToe_Orleans_.Authorization;
+using TicTacToe_Orleans.Model;
+using TicTacToe_Orleans.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Security.Claims;
-namespace TicTacToe_Orleans_.Endpoints
+namespace TicTacToe_Orleans.Endpoints
 {
     public static class UserEndpoints
     {

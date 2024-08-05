@@ -1,5 +1,5 @@
 ﻿
-namespace TicTacToe_Orleans_.Grains
+namespace TicTacToe_Orleans.Grains
 {
     public interface IConnectionGrain : IGrainWithStringKey
     {

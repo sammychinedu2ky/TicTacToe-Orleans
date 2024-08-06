@@ -65,11 +65,11 @@ async function myAction(prevState: string | undefined, queryData: FormData) {
     if (opponent == "user" && email != null) {
         try {
 
-            let checkIfUserExists = await fetch(`http://localhost:5103/api/user/${email}`)
+            let checkIfUserExists = await fetch(`${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/user/${email}`)
             if (checkIfUserExists.ok) {
                 var gameRoom = uuid();
                 try {
-                    await fetch(`http://localhost:5103/api/gameroom`, {
+                    await fetch(`${process.env.API_SERVER_URL}/api/gameroom`, {
                         method: 'POST',
                         headers: new Headers({
                             'Content-Type': 'application/json',
@@ -97,7 +97,7 @@ async function myAction(prevState: string | undefined, queryData: FormData) {
     else {
         let gameRoom = uuid();
         try {
-            await fetch(`http://localhost:5103/api/gameroom`, {
+            await fetch(`${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/gameroom`, {
                 method: 'POST',
                 headers: new Headers({
                     'Content-Type': 'application/json',

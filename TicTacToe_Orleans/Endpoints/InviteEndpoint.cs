@@ -1,6 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http.HttpResults;
 using TicTacToe_Orleans.Model;
+using Polly;
+using System.Security.Claims;
+using System.Security.Principal;
+using Microsoft.AspNetCore.Authentication.Cookies;
 namespace TicTacToe_Orleans.Endpoints
 {
     public static class InviteEndpoints
@@ -14,7 +18,13 @@ namespace TicTacToe_Orleans.Endpoints
             return await db.Invites.ToListAsync();
         })
         .WithName("GetAllInvites");
-
+        group.MapGet("/my-invites", async(ApplicationDbContext db, HttpContext context) =>
+        {
+            var identity = context?.User?.Identity as ClaimsIdentity;
+            var email = identity?.FindFirst(ClaimTypes.Email)?.Value;
+            var invites = await db.Invites.Where(model => model.To == email).ToListAsync();
+            return invites ?? new List<Invite>();
+        }).RequireAuthorization(CookieAuthenticationDefaults.AuthenticationScheme);
         group.MapGet("/{id}", async Task<Results<Ok<Invite>, NotFound>> (Guid id, ApplicationDbContext db) =>
         {
             return await db.Invites.AsNoTracking()

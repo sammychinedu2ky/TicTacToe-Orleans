@@ -1,3 +1,4 @@
+'use client'
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import * as signalR from '@microsoft/signalr';
 
@@ -7,10 +8,10 @@ interface SignalRProviderProps {
 }
 export const SignalRProvider = ({ children}:SignalRProviderProps) => {
   const [connection, setConnection] = useState<signalR.HubConnection|null>(null);
-
+console.log(process.env.NEXT_PUBLIC_API_SERVER_URL)
   useEffect(() => {
     const newConnection = new signalR.HubConnectionBuilder()
-      .withUrl(' http://localhost:5103/gameRoomHub')
+      .withUrl(`${process.env.NEXT_PUBLIC_API_SERVER_URL}/gameRoomHub`)
       .withAutomaticReconnect()
       .build();
 

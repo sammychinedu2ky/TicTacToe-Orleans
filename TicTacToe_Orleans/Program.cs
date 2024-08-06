@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using System.IdentityModel.Tokens.Jwt;
 using TicTacToe_Orleans.Hubs;
 using Orleans.Runtime;
+using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.AspNetCore.Identity;
 var builder = WebApplication.CreateBuilder(args);
 
 IdentityModelEventSource.ShowPII = true;
@@ -38,7 +40,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     .AddCookie(options =>
     {
         options.ForwardChallenge = JwtBearerDefaults.AuthenticationScheme;
-        options.Events.OnValidatePrincipal =  context =>
+        options.Events.OnSigningIn = async context =>
         {
             var jwtToken = context.Request.Cookies["authToken"];
             if (jwtToken != null)
@@ -57,20 +59,15 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
                     var principal = tokenHandler.ValidateToken(jwtToken, validationParameters, out _);
                     context.Principal = principal;
                 }
-                catch
+                catch (Exception ex)
                 {
-                    context.RejectPrincipal();
-                   
+                    Console.WriteLine(ex.Message);
+
                 }
-            }
-            else
-            {
-                context.RejectPrincipal();
-            }
-            return Task.CompletedTask;
+            };
         };
+     
     });
-    ;
 
 
 builder.Services.AddAuthorization(options =>
@@ -90,6 +87,15 @@ builder.Services.AddAuthorization(options =>
         r.RequireAuthenticatedUser();
     });
 });
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(builder =>
+    {
+        builder.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
 builder.Services.AddSingleton<IAuthorizationHandler, AuthSecretHandler>();
 builder.Services.AddHttpContextAccessor();
 builder.Host.UseOrleans(static siloBuilder =>
@@ -101,7 +107,7 @@ builder.Host.UseOrleans(static siloBuilder =>
 builder.Services.AddSignalR();
 var app = builder.Build();
 
-
+app.UseCors();
 app.MapUserEndpoints();
 
 app.MapInviteEndpoints();

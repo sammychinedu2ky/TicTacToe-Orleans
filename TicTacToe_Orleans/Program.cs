@@ -82,6 +82,7 @@ builder.Services.AddSignalR();
 var app = builder.Build();
 
 app.UseCors();
+
 app.MapUserEndpoints();
 
 app.MapInviteEndpoints();

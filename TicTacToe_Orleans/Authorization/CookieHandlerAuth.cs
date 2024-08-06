@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Polly;
@@ -11,18 +12,17 @@ namespace TicTacToe_Orleans.Authorization
 {
     public class CookieHandlerAuth : AuthenticationHandler<CookieHandlerAuthOptions>
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IOptionsMonitor<CookieHandlerAuthOptions> _options;
 
-        public CookieHandlerAuth(IHttpContextAccessor httpContextAccessor, IOptionsMonitor<CookieHandlerAuthOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock) : base(options, logger, encoder, clock)
+        public CookieHandlerAuth( IOptionsMonitor<CookieHandlerAuthOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock) : base(options, logger, encoder, clock)
         {
-            _httpContextAccessor = httpContextAccessor;
             _options = options;
         }
 
-        protected override Task<AuthenticateResult> HandleAuthenticateAsync()
+        protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            if (_httpContextAccessor.HttpContext!.Request.Cookies.TryGetValue("authToken", out var jwtToken))
+            
+            if (Context!.Request.Cookies.TryGetValue("authToken", out var jwtToken))
             {
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var validationParameters = new TokenValidationParameters
@@ -30,39 +30,50 @@ namespace TicTacToe_Orleans.Authorization
                     ValidateIssuer = false,
                     ValidateAudience = false,
                     ValidateLifetime = true,
+                    AuthenticationType = "JWT",
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.CurrentValue.Secret))
                 };
                 try
                 {
-                    var principal = tokenHandler.ValidateToken(jwtToken, validationParameters, out _);
+                    
+                    var principal =  await tokenHandler.ValidateTokenAsync(jwtToken, validationParameters);
+                    
+                  
+                    // Modify claims if necessary
+                    var identity = (ClaimsIdentity)principal.ClaimsIdentity!;
+                    var claims = new List<Claim>(identity.Claims);
 
-                    var ticket = new AuthenticationTicket(principal, new AuthenticationProperties
+                    // Example: Map a specific claim
+                    var email = identity?.FindFirst(ClaimTypes.Email)?.Value;
+                    var name = identity?.FindFirst(ClaimTypes.Name)?.Value;
+                    if (name == null)
                     {
-                        IsPersistent = true,
-                        ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(30),
-                        AllowRefresh = true,
-                        Parameters
-                    }, CookieHandlerAuthOptions.Scheme);
+                        claims.Add(new Claim(ClaimTypes.Name, "user"));
+                    }
+                    var newIdentity = new ClaimsIdentity(claims,"JWT");
+                   
+                    var newPrincipal = new ClaimsPrincipal(newIdentity);
+                    var ticket = new AuthenticationTicket(newPrincipal, CookieHandlerAuthOptions.Scheme);
                     var d = AuthenticateResult.Success(ticket);
 
 
-                    return Task.FromResult(AuthenticateResult.Success(ticket));
+                    return AuthenticateResult.Success(ticket);
                 }
                 catch
                 {
-                    return Task.FromResult(AuthenticateResult.Fail("Invalid token"));
+                    return AuthenticateResult.Fail("Invalid token");
 
                 }
             }
-            return Task.FromResult(AuthenticateResult.Fail("No token"));
+            return AuthenticateResult.Fail("No token");
 
         }
     }
 
     public class CookieHandlerAuthOptions : AuthenticationSchemeOptions
     {
-        public const string Scheme = nameof(CookieHandlerAuthOptions);
+        public const string Scheme = "CustomCookie";
         public string Secret { get; set; }
 
     }

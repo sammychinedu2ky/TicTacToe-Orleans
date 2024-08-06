@@ -42,10 +42,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["AUTH_SECRET"]!))
         };
 
-    }).AddScheme<CookieHandlerAuthOptions,CookieHandlerAuth>(CookieHandlerAuthOptions.Scheme, options => { 
-       options.Secret = builder.Configuration["AUTH_SECRET"]!;
-        
-    })
+    }).AddScheme<CookieHandlerAuthOptions,CookieHandlerAuth>(CookieHandlerAuthOptions.Scheme, null)
     ;
 
 
@@ -60,6 +57,7 @@ builder.Services.AddAuthorization(options =>
     {
         r.AddRequirements(new CookieHandlerRequirement(builder.Configuration["AUTH_SECRET"]!));
         r.AddAuthenticationSchemes(CookieHandlerAuthOptions.Scheme);
+       
     
     });
 });

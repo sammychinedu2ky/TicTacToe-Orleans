@@ -36,7 +36,7 @@ namespace TicTacToe_Orleans.Endpoints
                
                 return await db.Users.ToListAsync();
             })
-            .WithName("GetAllUsers").RequireAuthorization();
+            .WithName("GetAllUsers").RequireAuthorization(CookieHandlerRequirement.Policy);
 
             group.MapGet("/{id}", async Task<Results<Ok<User>, NotFound>> (string id, ApplicationDbContext db) =>
             {

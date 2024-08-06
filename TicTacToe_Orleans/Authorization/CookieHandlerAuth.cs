@@ -36,7 +36,14 @@ namespace TicTacToe_Orleans.Authorization
                 try
                 {
                     var principal = tokenHandler.ValidateToken(jwtToken, validationParameters, out _);
-                    var ticket = new AuthenticationTicket(principal, CookieHandlerAuthOptions.Scheme);
+
+                    var ticket = new AuthenticationTicket(principal, new AuthenticationProperties
+                    {
+                        IsPersistent = true,
+                        ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(30),
+                        AllowRefresh = true,
+                        Parameters
+                    }, CookieHandlerAuthOptions.Scheme);
                     var d = AuthenticateResult.Success(ticket);
 
 
@@ -49,7 +56,7 @@ namespace TicTacToe_Orleans.Authorization
                 }
             }
             return Task.FromResult(AuthenticateResult.Fail("No token"));
-           
+
         }
     }
 
@@ -57,7 +64,7 @@ namespace TicTacToe_Orleans.Authorization
     {
         public const string Scheme = nameof(CookieHandlerAuthOptions);
         public string Secret { get; set; }
-       
+
     }
 }
 

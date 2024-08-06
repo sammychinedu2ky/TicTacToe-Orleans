@@ -13,8 +13,9 @@ namespace TicTacToe_Orleans.Authorization
 
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, AuthSecretRequirement requirement)
         {
+
             var httpContext = _httpContextAccessor.HttpContext;
-            
+
             if (httpContext != null &&
                 httpContext.Request.Headers.TryGetValue("Auth-Secret", out var authHeader))
             {
@@ -27,11 +28,8 @@ namespace TicTacToe_Orleans.Authorization
                     context.Fail();
                 }
             }
-            else
-            {
-                context.Fail();
-            }
 
+            context.Fail();
             return Task.CompletedTask;
         }
     }

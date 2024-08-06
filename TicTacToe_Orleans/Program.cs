@@ -13,6 +13,7 @@ using TicTacToe_Orleans.Hubs;
 using Orleans.Runtime;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.DataProtection;
 var builder = WebApplication.CreateBuilder(args);
 
 IdentityModelEventSource.ShowPII = true;
@@ -24,7 +25,12 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     }
     ));
 Console.WriteLine(builder.Configuration["AUTH_SECRET"]!);
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+builder.Services.Configure<CookieHandlerAuthOptions>(options =>
+{
+
+   options.Secret = builder.Configuration["AUTH_SECRET"]!;
+});
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
@@ -36,38 +42,11 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["AUTH_SECRET"]!))
         };
 
+    }).AddScheme<CookieHandlerAuthOptions,CookieHandlerAuth>(CookieHandlerAuthOptions.Scheme, options => { 
+       options.Secret = builder.Configuration["AUTH_SECRET"]!;
+        
     })
-    .AddCookie(options =>
-    {
-        options.ForwardChallenge = JwtBearerDefaults.AuthenticationScheme;
-        options.Events.OnSigningIn = async context =>
-        {
-            var jwtToken = context.Request.Cookies["authToken"];
-            if (jwtToken != null)
-            {
-                var tokenHandler = new JwtSecurityTokenHandler();
-                var validationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["AUTH_SECRET"]!))
-                };
-                try
-                {
-                    var principal = tokenHandler.ValidateToken(jwtToken, validationParameters, out _);
-                    context.Principal = principal;
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-
-                }
-            };
-        };
-     
-    });
+    ;
 
 
 builder.Services.AddAuthorization(options =>
@@ -76,15 +55,12 @@ builder.Services.AddAuthorization(options =>
     {
         r.AddRequirements(new AuthSecretRequirement(builder.Configuration["AUTH_SECRET"]!));
     });
-    options.AddPolicy(JwtBearerDefaults.AuthenticationScheme, r =>
+  
+    options.AddPolicy(CookieHandlerRequirement.Policy, r =>
     {
-        r.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme);
-        r.RequireAuthenticatedUser();
-    });
-    options.AddPolicy(CookieAuthenticationDefaults.AuthenticationScheme, r =>
-    {
-        r.AddAuthenticationSchemes(CookieAuthenticationDefaults.AuthenticationScheme);
-        r.RequireAuthenticatedUser();
+        r.AddRequirements(new CookieHandlerRequirement(builder.Configuration["AUTH_SECRET"]!));
+        r.AddAuthenticationSchemes(CookieHandlerAuthOptions.Scheme);
+    
     });
 });
 builder.Services.AddCors(options =>

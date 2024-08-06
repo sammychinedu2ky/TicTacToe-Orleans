@@ -5,6 +5,7 @@ using Polly;
 using System.Security.Claims;
 using System.Security.Principal;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using TicTacToe_Orleans.Authorization;
 namespace TicTacToe_Orleans.Endpoints
 {
     public static class InviteEndpoints
@@ -24,7 +25,7 @@ namespace TicTacToe_Orleans.Endpoints
             var email = identity?.FindFirst(ClaimTypes.Email)?.Value;
             var invites = await db.Invites.Where(model => model.To == email).ToListAsync();
             return invites ?? new List<Invite>();
-        }).RequireAuthorization(CookieAuthenticationDefaults.AuthenticationScheme);
+        }).RequireAuthorization(CookieHandlerRequirement.Policy);
         group.MapGet("/{id}", async Task<Results<Ok<Invite>, NotFound>> (Guid id, ApplicationDbContext db) =>
         {
             return await db.Invites.AsNoTracking()

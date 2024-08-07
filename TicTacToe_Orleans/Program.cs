@@ -30,22 +30,11 @@ builder.Services.Configure<CookieHandlerAuthOptions>(options =>
 
    options.Secret = builder.Configuration["AUTH_SECRET"]!;
 });
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = false,
-            ValidateAudience = false,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["AUTH_SECRET"]!))
-        };
-
-    }).AddScheme<CookieHandlerAuthOptions,CookieHandlerAuth>(CookieHandlerAuthOptions.Scheme, null)
+builder.Services.AddAuthentication(CookieHandlerAuthOptions.Scheme)
+    .AddScheme<CookieHandlerAuthOptions,CookieHandlerAuthScheme>(CookieHandlerAuthOptions.Scheme, null)
     ;
 
-
+builder.Services.AddSingleton<IAuthorizationHandler, CookieHandler>();
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy(AuthSecretRequirement.Policy, r =>
@@ -55,7 +44,8 @@ builder.Services.AddAuthorization(options =>
   
     options.AddPolicy(CookieHandlerRequirement.Policy, r =>
     {
-        r.AddRequirements(new CookieHandlerRequirement(builder.Configuration["AUTH_SECRET"]!));
+        r.RequireAuthenticatedUser();
+      //  r.AddRequirements(new CookieHandlerRequirement(builder.Configuration["AUTH_SECRET"]!));
         r.AddAuthenticationSchemes(CookieHandlerAuthOptions.Scheme);
        
     

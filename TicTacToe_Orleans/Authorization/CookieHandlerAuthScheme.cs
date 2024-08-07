@@ -10,18 +10,18 @@ using System.Text.Encodings.Web;
 
 namespace TicTacToe_Orleans.Authorization
 {
-    public class CookieHandlerAuth : AuthenticationHandler<CookieHandlerAuthOptions>
+    public class CookieHandlerAuthScheme : AuthenticationHandler<CookieHandlerAuthOptions>
     {
         private readonly IOptionsMonitor<CookieHandlerAuthOptions> _options;
 
-        public CookieHandlerAuth( IOptionsMonitor<CookieHandlerAuthOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock) : base(options, logger, encoder, clock)
+        public CookieHandlerAuthScheme(IOptionsMonitor<CookieHandlerAuthOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock) : base(options, logger, encoder, clock)
         {
             _options = options;
         }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            
+
             if (Context!.Request.Cookies.TryGetValue("authToken", out var jwtToken))
             {
                 var tokenHandler = new JwtSecurityTokenHandler();
@@ -36,28 +36,15 @@ namespace TicTacToe_Orleans.Authorization
                 };
                 try
                 {
-                    
-                    var principal =  await tokenHandler.ValidateTokenAsync(jwtToken, validationParameters);
-                    
-                  
-                    // Modify claims if necessary
+
+                    var principal = await tokenHandler.ValidateTokenAsync(jwtToken, validationParameters);
                     var identity = (ClaimsIdentity)principal.ClaimsIdentity!;
                     var claims = new List<Claim>(identity.Claims);
 
-                    // Example: Map a specific claim
-                    var email = identity?.FindFirst(ClaimTypes.Email)?.Value;
-                    var name = identity?.FindFirst(ClaimTypes.Name)?.Value;
-                    if (name == null)
-                    {
-                        claims.Add(new Claim(ClaimTypes.Name, "user"));
-                    }
-                    var newIdentity = new ClaimsIdentity(claims,"JWT");
-                   
+                    var newIdentity = new ClaimsIdentity(claims, "JWT");
+
                     var newPrincipal = new ClaimsPrincipal(newIdentity);
                     var ticket = new AuthenticationTicket(newPrincipal, CookieHandlerAuthOptions.Scheme);
-                    var d = AuthenticateResult.Success(ticket);
-
-
                     return AuthenticateResult.Success(ticket);
                 }
                 catch

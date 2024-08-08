@@ -9,7 +9,7 @@ export default async function Home() {
   const session = await auth()
   return (
     <main >
-      <SessionProvider session={session}>
+      <SessionProvider session={session} refetchOnWindowFocus={false}>
         <StartGame/>
       </SessionProvider>
     </main>

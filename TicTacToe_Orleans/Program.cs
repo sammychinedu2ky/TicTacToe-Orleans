@@ -30,7 +30,7 @@ builder.Services.Configure<CookieHandlerAuthOptions>(options =>
 
    options.Secret = builder.Configuration["AUTH_SECRET"]!;
 });
-builder.Services.AddAuthentication(CookieHandlerAuthOptions.Scheme)
+builder.Services.AddAuthentication()
     .AddScheme<CookieHandlerAuthOptions,CookieHandlerAuthScheme>(CookieHandlerAuthOptions.Scheme, null)
     ;
 
@@ -44,9 +44,9 @@ builder.Services.AddAuthorization(options =>
   
     options.AddPolicy(CookieHandlerRequirement.Policy, r =>
     {
-        r.RequireAuthenticatedUser();
-      //  r.AddRequirements(new CookieHandlerRequirement(builder.Configuration["AUTH_SECRET"]!));
-        r.AddAuthenticationSchemes(CookieHandlerAuthOptions.Scheme);
+       // r.RequireAuthenticatedUser();
+        r.AddRequirements(new CookieHandlerRequirement(builder.Configuration["AUTH_SECRET"]!));
+       // r.AddAuthenticationSchemes(CookieHandlerAuthOptions.Scheme);
        
     
     });
@@ -55,8 +55,9 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(builder =>
     {
-        builder.AllowAnyOrigin()
+        builder.WithOrigins("http://localhost:3000")
             .AllowAnyMethod()
+            .AllowCredentials()
             .AllowAnyHeader();
     });
 });

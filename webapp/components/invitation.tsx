@@ -7,6 +7,7 @@ import InvitationCard from "./invitation-card"
 export default function Invitation() {
     const session = useSession()
     const signalR = useSignalR()
+    console.log("rendered")
     const { data, error,isLoading,mutate } = useSWR(`${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/invite/my-invites`, async (url) => {
 
         const res = await fetch(url,{credentials: 'include'})

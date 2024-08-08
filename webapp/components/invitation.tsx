@@ -3,8 +3,10 @@
 import { useSignalR } from "@/contexts/SignalRContext"
 import { signIn, useSession } from "next-auth/react"
 import useSWR from "swr"
+import dummy  from "./invitationdummy"
 import InvitationCard from "./invitation-card"
 export default function Invitation() {
+    let dum = dummy.slice(0, 10)
     const session = useSession()
     const signalR = useSignalR()
     console.log("rendered")
@@ -13,6 +15,8 @@ export default function Invitation() {
         const res = await fetch(url,{credentials: 'include'})
         return res.json()
     })
+    // use tool tip to show error
+    console.log(error)
     console.log(data)
     let isUserAuthenticated = session.status == "authenticated"
 
@@ -29,7 +33,8 @@ export default function Invitation() {
 
                 : <div>
                     {isLoading && <div className="text-center mt-8">Loading...</div>}
-                    {!isLoading && data && data.length > 0 && data.map((invite:any)=><InvitationCard key={invite.Id} invite={invite}/>)}
+                    {/* {!isLoading && data && data.length > 0 && data.map((invite:any)=><InvitationCard key={invite.Id} invite={invite}/>)} */}
+                    {dum.map((invite: any) => <InvitationCard key={invite.Id} invitation={invite} />)}
                 </div>}
         </>
     );

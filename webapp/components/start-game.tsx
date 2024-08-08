@@ -16,12 +16,12 @@ export default function StartGame() {
     }
     return (
         <>
-            <div className="md:flex  h-[80vh] items-center border-4 border-green-700">
+            <div className="md:flex  min-h-[80vh] items-center border-4 border-green-700">
                 <div className="basis-full  flex flex-wrap">
                     <div className="basis-full  md:basis-8/12  text-center  border-4 border-red-700">
                         <form action={formAction}>
-                            <h3 className="text-5xl font-bold text-red-400">Play Against
-                                <span className="ml-2">
+                            <h3 className="text-5xl font-bold text-red-400 mt-3">Play Against
+                                <span className="ml-2 leading-loose ">
                                     <select
                                         name="opponent-selection"
                                         className=" border-red-400 rounded-md text-center  bg-red-400 text-white  focus:ring-red-200 mb-36"
@@ -46,10 +46,10 @@ export default function StartGame() {
                             </div>
                         </form>
                     </div>
-                    <div className=" basis-full border-4 w-full border-red-600 md:basis-4/12">
-                    <SignalRProvider>
-                        <Invitation />
-                    </SignalRProvider>
+                    <div className=" basis-full border-4 border-red-600 md:basis-4/12">
+                        <SignalRProvider>
+                            <Invitation />
+                        </SignalRProvider>
                     </div>
                 </div>
             </div>
@@ -74,7 +74,7 @@ async function myAction(prevState: string | undefined, queryData: FormData) {
                         headers: new Headers({
                             'Content-Type': 'application/json',
                         }),
-                        body: JSON.stringify({ Id: gameRoom, Type: "User" })
+                        body: JSON.stringify({ Id: gameRoom, Type: "User", Email: email })
                     })
                     // redirect to game room
                     router.push(`/game-room/${gameRoom}`)

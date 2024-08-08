@@ -22,7 +22,7 @@ namespace TicTacToe_Orleans.Grains
             _hubContext = hubContext;
             this._grainFactory = grainFactory;
         }
-        public async Task JoinRoom(string? userId, string? userName, string connectionId)
+        public async Task JoinRoom(string? userId, string connectionId)
         {
             if (_gameRoomType is null)
             {

@@ -31,8 +31,7 @@ namespace TicTacToe_Orleans.Endpoints
             group.MapGet("/", async (ApplicationDbContext db, HttpContext context) =>
             {
                 var identity = context.User.Identity as ClaimsIdentity;
-                var email = identity.FindFirst(ClaimTypes.Email)?.Value;
-                var name = identity.FindFirst(ClaimTypes.Name)?.Value;
+                
                
                 return await db.Users.ToListAsync();
             })

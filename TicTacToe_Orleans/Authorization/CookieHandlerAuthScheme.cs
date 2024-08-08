@@ -32,7 +32,7 @@ namespace TicTacToe_Orleans.Authorization
                     ValidateLifetime = true,
                     AuthenticationType = "JWT",
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.CurrentValue.Secret))
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.CurrentValue.Secret!))
                 };
                 try
                 {
@@ -61,7 +61,7 @@ namespace TicTacToe_Orleans.Authorization
     public class CookieHandlerAuthOptions : AuthenticationSchemeOptions
     {
         public const string Scheme = "CustomCookie";
-        public string Secret { get; set; }
+        public string? Secret { get; set; }
 
     }
 }

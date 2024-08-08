@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http.HttpResults;
 using TicTacToe_Orleans.Model;
+using Microsoft.AspNetCore.SignalR;
+using TicTacToe_Orleans.Hubs;
 namespace TicTacToe_Orleans.Endpoints
 {
     public static class GameRoomEndpoints
@@ -40,19 +42,36 @@ namespace TicTacToe_Orleans.Endpoints
             })
             .WithName("UpdateGameRoom");
 
-            group.MapPost("/", async (GameRoomDto gameRoomDto, ApplicationDbContext db) =>
+            group.MapPost("/", async (GameRoomDto gameRoomDto, ApplicationDbContext db, IHubContext<GameRoomHub, IGameRoomClient> hubContext) =>
             {
                 var gameRoom = new GameRoom
                 {
                     Id = Guid.NewGuid(),
                     Type = gameRoomDto.Type
                 };
+                Invitation? invitation = null;
+                if (!String.IsNullOrEmpty(gameRoomDto.Email))
+                {
+                    invitation = new Invitation
+                    {
+                        Id = gameRoom.Id,
+                        From = gameRoomDto.Email,
+                        To = gameRoomDto.Email,
+                        GameRoom = gameRoom.Id,
+                        NewInvite = true
+                    };
+                    db.Invites.Add(invitation);
+
+                }
                 db.GameRooms.Add(gameRoom);
                 await db.SaveChangesAsync();
+                if (invitation is not null)
+                {
+                    await hubContext.Clients.Group(gameRoomDto.Email).ReceiveInviteAsync(gameRoomDto.Email, invitation.ToDTO());
+                }
                 return TypedResults.Created($"/api/GamePlay/{gameRoom.Id}", gameRoom);
             })
             .WithName("CreateGameRoom");
-
             group.MapDelete("/{id}", async Task<Results<Ok, NotFound>> (Guid id, ApplicationDbContext db) =>
             {
                 var affected = await db.GameRooms
@@ -69,5 +88,6 @@ namespace TicTacToe_Orleans.Endpoints
     {
         public Guid Id { get; set; }
         public GameRoomType Type { get; set; }
+        public string Email { get; set; }
     }
 }

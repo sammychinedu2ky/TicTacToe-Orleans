@@ -12,6 +12,6 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<User> Users { get; set; } = default!;
 
-    public DbSet<Invite> Invites { get; set; } = default!;
+    public DbSet<Invitation> Invites { get; set; } = default!;
    
 }

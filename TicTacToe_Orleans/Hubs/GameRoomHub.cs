@@ -28,9 +28,8 @@ namespace TicTacToe_Orleans.Hubs
             }
             var identity = Context?.User?.Identity as ClaimsIdentity;
             var email = identity?.FindFirst(ClaimTypes.Email)?.Value;
-            var name = identity?.FindFirst(ClaimTypes.Name)?.Value;
             var gameRoomGrain = _grainFactory.GetGrain<IGameRoomGrain>(roomId);
-            await gameRoomGrain.JoinRoom(email, name, Context!.ConnectionId);
+            await gameRoomGrain.JoinRoom(email, Context!.ConnectionId);
 
         }
 
@@ -54,9 +53,9 @@ namespace TicTacToe_Orleans.Hubs
             }
             else
             {
-                var identity = Context?.User?.Identity as ClaimsIdentity;
+                var identity = Context!.User?.Identity as ClaimsIdentity;
                 var email = identity?.FindFirst(ClaimTypes.Email)?.Value!;
-                var connectionId = Context.ConnectionId;
+                var connectionId = Context!.ConnectionId;
                 var connectionGrain = _grainFactory.GetGrain<IConnectionGrain>(nameof(MyConnections));
                 await connectionGrain.RemoveUserAsync(email, connectionId);
             }

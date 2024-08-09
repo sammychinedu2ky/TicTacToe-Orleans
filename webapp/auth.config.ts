@@ -2,6 +2,7 @@ import Github from "next-auth/providers/github";
 import { SignJWT, jwtVerify, errors } from "jose"
 import type { NextAuthConfig } from "next-auth"
 import NextAuth from "next-auth";
+import { redirect } from "next/navigation";
 
 export const authOptions = {
   callbacks: {
@@ -16,23 +17,27 @@ export const authOptions = {
       }
       return true
     },
-    async jwt({ token, user }) {
-        console.log('tokoen in ', token)
-      if (token.newUser == undefined) {
-        token.newUser = false
+    async jwt({ token }) {
+        
+      console.log('tokoen in ', token)
+      if (token.newUser == undefined ) {
         // add to database
         try{
-          await fetch('http://localhost:5103/api/user', {
+        const req =  await fetch(`${process.env.API_SERVER_URL}/api/user`, {
             method: 'POST',
             headers: new Headers({
               'Content-Type': 'application/json',
               'Auth-Secret': process.env.AUTH_SECRET!
             }),
-            body: JSON.stringify({ Id: user.email, Name: user.name })
+            body: JSON.stringify({ Id: token.email, Name: token.name })
           })
+          if(req.ok)
+          token.newUser = false
         }
         catch(e){
           console.log(e)
+          // redirect to home page during error 
+          return redirect('/') 
         }
       
         console.log('new user')

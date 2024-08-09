@@ -23,7 +23,7 @@ namespace TicTacToe_Orleans.Hubs
             var exists = await _dbContext.GameRooms.AnyAsync(x => x.Id == roomId);
             if (!exists)
             {
-                await Clients.Caller.ReceiveErrorAsync(Context.ConnectionId, "Game room does not exist");
+                await Clients.Caller.ReceiveError(Context.ConnectionId, "Game room does not exist");
                 return;
             }
             var identity = Context?.User?.Identity as ClaimsIdentity;

@@ -22,10 +22,7 @@ namespace TicTacToe_Orleans.Authorization
                 if (authHeader.ToString().Contains(requirement.Secret))
                 {
                     context.Succeed(requirement);
-                }
-                else
-                {
-                    context.Fail();
+                    return Task.CompletedTask;
                 }
             }
 

@@ -41,12 +41,12 @@ namespace TicTacToe_Orleans.Grains
                     await _hubContext.Groups.AddToGroupAsync(connectionId, this.GetPrimaryKey().ToString());
                     await connectionGrain.AddUserAsync(userId, connectionId);
                     AssignState(userId);
-                    await _hubContext.Clients.Client(connectionId).ReceiveGameStateAsync(this.GetPrimaryKey(), State);
+                    await _hubContext.Clients.Client(connectionId).ReceiveGameState(this.GetPrimaryKey(), State);
                 }
                 else
                 {
 
-                    await _hubContext.Clients.Client(connectionId).ReceiveErrorAsync(connectionId, "Can't join more than one room");
+                    await _hubContext.Clients.Client(connectionId).ReceiveError(connectionId, "Can't join more than one room");
                     return;
                 }
             }
@@ -54,7 +54,7 @@ namespace TicTacToe_Orleans.Grains
             {
                 await _hubContext.Groups.AddToGroupAsync(connectionId, this.GetPrimaryKey().ToString());
                 await connectionGrain.AddUserAsync(null, connectionId);
-                await _hubContext.Clients.Client(connectionId).ReceiveGameStateAsync(this.GetPrimaryKey(), State);
+                await _hubContext.Clients.Client(connectionId).ReceiveGameState(this.GetPrimaryKey(), State);
             }
         }
         public void AssignState(string userId)

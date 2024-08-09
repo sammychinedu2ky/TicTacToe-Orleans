@@ -45,7 +45,7 @@ namespace TicTacToe_Orleans.Endpoints
                         ? TypedResults.Ok(model)
                         : TypedResults.NotFound();
             })
-            .WithName("GetUserById");
+            .WithName("GetUserById").RequireAuthorization(CookieHandlerRequirement.Policy);
 
             group.MapPut("/{id}", async Task<Results<Ok, NotFound>> (string id, User user, ApplicationDbContext db) =>
             {

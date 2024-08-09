@@ -2,17 +2,20 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace TicTacToe_Orleans.Migrations
+namespace TicTacToe_Orleans_.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240809115654_changed-gameroom-modelv4")]
+    partial class changedgameroommodelv4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -74,7 +77,7 @@ namespace TicTacToe_Orleans.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Invitations");
+                    b.ToTable("Invites");
                 });
 
             modelBuilder.Entity("TicTacToe_Orleans.Model.User", b =>
@@ -89,6 +92,30 @@ namespace TicTacToe_Orleans.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("TicTacToe_Orleans.Model.GameRoom", b =>
+                {
+                    b.OwnsOne("System.Collections.Generic.List<System.Collections.Generic.List<char>>", "Board", b1 =>
+                        {
+                            b1.Property<Guid>("GameRoomId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<int>("Capacity")
+                                .HasColumnType("integer");
+
+                            b1.HasKey("GameRoomId");
+
+                            b1.ToTable("GameRooms");
+
+                            b1.ToJson("Board");
+
+                            b1.WithOwner()
+                                .HasForeignKey("GameRoomId");
+                        });
+
+                    b.Navigation("Board")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

@@ -3,17 +3,36 @@
 import { useSignalR } from "@/contexts/SignalRContext"
 import { signIn, useSession } from "next-auth/react"
 import useSWR from "swr"
-import dummy  from "./invitationdummy"
+import dummy from "./invitationdummy"
 import InvitationCard from "./invitation-card"
+import fetcher from "@/utils/fetch"
+import { useEffect } from "react"
+import { InvitationDTO } from "@/interfaces/interface"
+import notify from "@/utils/notify"
 export default function Invitation() {
     let dum = dummy.slice(0, 10)
     const session = useSession()
-    const signalR = useSignalR()
-    console.log("rendered")
-    const { data, error,isLoading,mutate } = useSWR(`${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/invite/my-invites`, async (url) => {
+    const connection = useSignalR()
 
-        const res = await fetch(url,{credentials: 'include'})
-        return res.json()
+    console.log("rendered")
+    const { data, error, isLoading, mutate } = useSWR(`${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/invitations/my-invites`, async (url) => {
+
+        try {
+            const res = await fetcher(url)
+            return await res.json()
+
+        } catch (error) {
+            notify("Error fetching invites")
+        }
+    })
+    useEffect(() => {
+        if (connection && session.status == "authenticated") {
+            connection.on("ReceiveInvite", (invitation: InvitationDTO) => {
+                console.log("received invite realtime", invitation)
+                // Task ReceiveInviteAsync(string userId, InvitationDTO invite);
+                mutate({ data: [invitation, ...data] })
+            })
+        }
     })
     // use tool tip to show error
     console.log(error)
@@ -33,8 +52,8 @@ export default function Invitation() {
 
                 : <div>
                     {isLoading && <div className="text-center mt-8">Loading...</div>}
-                    {/* {!isLoading && data && data.length > 0 && data.map((invite:any)=><InvitationCard key={invite.Id} invite={invite}/>)} */}
-                    {dum.map((invite: any) => <InvitationCard key={invite.Id} invitation={invite} />)}
+                    {!isLoading && data && data.length > 0 && data.map((invitation: InvitationDTO) => <InvitationCard key={invitation.id} invitation={invitation} mutate={mutate} />)}
+                    {/* {dum.map((invite: any) => <InvitationCard key={invite.Id} invitation={invite} />)} */}
                 </div>}
         </>
     );

@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using TicTacToe_Orleans.Model;
 using Microsoft.AspNetCore.SignalR;
 using TicTacToe_Orleans.Hubs;
+using TicTacToe_Orleans.Authorization;
+using Polly;
+using System.Security.Claims;
 namespace TicTacToe_Orleans.Endpoints
 {
     public static class GameRoomEndpoints
@@ -35,19 +38,22 @@ namespace TicTacToe_Orleans.Endpoints
                       .SetProperty(m => m.Id, gamePlay.Id)
                       .SetProperty(m => m.X, gamePlay.X)
                       .SetProperty(m => m.O, gamePlay.O)
-                      .SetProperty(m => m.Board, gamePlay.Board)
                       .SetProperty(m => m.Type, gamePlay.Type)
                       );
                 return affected == 1 ? TypedResults.Ok() : TypedResults.NotFound();
             })
             .WithName("UpdateGameRoom");
 
-            group.MapPost("/", async (GameRoomDto gameRoomDto, ApplicationDbContext db, IHubContext<GameRoomHub, IGameRoomClient> hubContext) =>
+            group.MapPost("/", async (GameRoomDto gameRoomDto, ApplicationDbContext db, IHubContext<GameRoomHub, IGameRoomClient> hubContext, HttpContext context) =>
             {
+                var identity = context?.User?.Identity as ClaimsIdentity;
+                var user = identity?.FindFirst(ClaimTypes.Email)?.Value;
                 var gameRoom = new GameRoom
                 {
                     Id = Guid.NewGuid(),
                     Type = gameRoomDto.Type
+                
+
                 };
                 Invitation? invitation = null;
                 if (!String.IsNullOrEmpty(gameRoomDto.Email))
@@ -55,23 +61,23 @@ namespace TicTacToe_Orleans.Endpoints
                     invitation = new Invitation
                     {
                         Id = gameRoom.Id,
-                        From = gameRoomDto.Email,
+                        From = user!,
                         To = gameRoomDto.Email,
                         GameRoom = gameRoom.Id,
                         NewInvite = true
                     };
-                    db.Invites.Add(invitation);
+                    db.Invitations.Add(invitation);
 
                 }
                 db.GameRooms.Add(gameRoom);
                 await db.SaveChangesAsync();
                 if (invitation is not null)
                 {
-                    await hubContext.Clients.Group(gameRoomDto.Email).ReceiveInviteAsync(gameRoomDto.Email, invitation.ToDTO());
+                    await hubContext.Clients.Group(gameRoomDto.Email).ReceiveInvite(invitation.ToDTO());
                 }
                 return TypedResults.Created($"/api/GamePlay/{gameRoom.Id}", gameRoom);
             })
-            .WithName("CreateGameRoom");
+            .WithName("CreateGameRoom").RequireAuthorization(CookieHandlerRequirement.Policy);
             group.MapDelete("/{id}", async Task<Results<Ok, NotFound>> (Guid id, ApplicationDbContext db) =>
             {
                 var affected = await db.GameRooms

@@ -46,35 +46,31 @@ export default function Page({ params }: { params: { gameId: string } }) {
             connection.on("ReceiveGameState", (gameRoomDTO: GameRoomDTO) => {
                 console.log("received invite realtime", gameRoomDTO)
                 // Task ReceiveInviteAsync(string userId, InvitationDTO invite);
-
             })
         }
     })
+    let flatBoard = gameState.board.flat()
+    let turn = gameState.turn
+    console.log(flatBoard)
     return (
+        <>
+            {isLoading && <div className="text-center mt-8">Loading...</div>}
+            {!isLoading && data &&
+                <>
+                    <div className="text-center m-auto mt-4">Turn to play: {turn}</div>
+                    <div className="text-center m-auto grid grid-cols-3  h-[70vh] w-8/12 mt-12 border-8 border-red-400 rounded-md">
+                        {flatBoard.map((cell, index) => <div className="border text-center flex items-center justify-center border-red-400 " key={index}>{cell}</div>)}
+                    </div>
 
-        <div className="text-center">
-            {isLoading && isAuthenticated && <div>Loading...</div>}
-            {data != null && isAuthenticated &&
-                <div>hi</div>
-            }
-            <div className="border-2 border-red-900 w-9/12 h-[80vh] m-auto text-black">
-                <div className="flex">
-                    {gameState.board[0].map(box => (
-                        <div className="border-2 border-red-900 w-4/12 h-8/12">{box}</div>
-                    ))}
-                </div>
-                <div className="flex">
-                    {gameState.board[1].map(box => (
-                        <div className="border-2 border-red-900 w-4/12 h-4/12">{box}jjjjjj</div>
-                    ))}
-                </div>
-                <div className="flex">
-                    {gameState.board[2].map(box => (
-                        <div className="border-2 border-red-900 w-4/12 h-4/12">{box}ssss</div>
-                    ))}
-                </div>
-            </div>
-        </div>
+                </>}
+        </>
     )
 }
 
+
+function customConverter(n: number) {
+    const firstDigit = Math.floor(n / 3);
+    const secondDigit = n % 3;
+
+    return [firstDigit, secondDigit]
+}

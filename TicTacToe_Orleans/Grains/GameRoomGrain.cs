@@ -62,6 +62,10 @@ namespace TicTacToe_Orleans.Grains
             if (State.X is null)
             {
                 State.X = userId;
+                if(_gameRoomType == GameRoomType.Computer)
+                {
+                    State.O = "Computer";
+                }
             }
             else State.O = userId;
         }

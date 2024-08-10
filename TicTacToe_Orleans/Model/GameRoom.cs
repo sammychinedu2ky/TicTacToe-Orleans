@@ -21,6 +21,7 @@ namespace TicTacToe_Orleans.Model
         //};
         public int XWins { get; set; }
         public int OWins { get; set; }
+        public int Draw { get; set; }
         public GameRoomType Type { get; set; }
     }
     [JsonConverter(typeof(JsonStringEnumConverter))]

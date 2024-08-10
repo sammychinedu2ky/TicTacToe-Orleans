@@ -6,3 +6,13 @@ export interface InvitationDTO {
    
 }
 
+export interface GameRoomDTO{
+    x: string;
+    O: string;
+    winner: string;
+    turn: string;
+    xWins: number;
+    oWins: number;
+    draw: number;
+    board: string[][];
+}

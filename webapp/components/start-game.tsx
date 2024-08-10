@@ -4,7 +4,7 @@ import { useActionState, useEffect, useState } from "react";
 import { v7 as uuid } from "uuid";
 import Invitation from "./invitation";
 import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+
 import { SignalRProvider } from "@/contexts/SignalRContext";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import notify from "@/utils/notify";
@@ -70,18 +70,7 @@ export default function StartGame() {
                     </div>
                 </div>
             </div>
-            <ToastContainer
-                position="bottom-right"
-                autoClose={4000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss={false}
-                draggable={false}
-                pauseOnHover={false}
-                theme="light"
-            />
+           
         </>
     )
 }
@@ -99,7 +88,7 @@ async function myAction(router: AppRouterInstance, prevState: null | void, query
             if (checkIfUserExists.ok) {
                 var gameRoom = uuid();
                 try {
-                    await postFetcher(`${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/gameroom`,{ Id: gameRoom, Type: "User", Email: email })
+                    await postFetcher(`${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/game-room`,{ Id: gameRoom, Type: "User", Email: email })
                     // redirect to game room
                     router.push(`/game-room/${gameRoom}`)
                     return;
@@ -122,7 +111,7 @@ async function myAction(router: AppRouterInstance, prevState: null | void, query
     else {
         let gameRoom = uuid();
         try {
-            await postFetcher(`${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/gameroom`, { Id: gameRoom, Type: "Computer" })
+            await postFetcher(`${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/game-room`, { Id: gameRoom, Type: "Computer" })
             // redirect to game room
             router.push(`/game-room/${gameRoom}`)
             return;

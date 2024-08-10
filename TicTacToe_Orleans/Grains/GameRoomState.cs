@@ -9,6 +9,7 @@
         public char Turn { get; set; } = 'X';
         public int XWins { get; set; }
         public int OWins { get; set; }
+        public int Draw { get; set; }
         public List<List<char>> Board { get; set; } = new List<List<char>>
         {
             new List<char> { ' ', ' ', ' ' },

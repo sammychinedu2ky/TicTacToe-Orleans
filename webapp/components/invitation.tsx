@@ -13,14 +13,10 @@ export default function Invitation() {
     let dum = dummy.slice(0, 10)
     const session = useSession()
     const connection = useSignalR()
-
-    console.log("rendered")
     const { data, error, isLoading, mutate } = useSWR(`${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/invitations/my-invites`, async (url) => {
-
         try {
             const res = await fetcher(url)
             return await res.json()
-
         } catch (error) {
             notify("Error fetching invites")
         }

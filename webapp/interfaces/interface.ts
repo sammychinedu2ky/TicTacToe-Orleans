@@ -8,7 +8,7 @@ export interface InvitationDTO {
 
 export interface GameRoomDTO{
     x: string;
-    O: string;
+    o: string;
     winner: string;
     turn: string;
     xWins: number;

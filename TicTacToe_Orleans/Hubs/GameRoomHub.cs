@@ -35,10 +35,8 @@ namespace TicTacToe_Orleans.Hubs
 
         public async Task SendGameState(Guid roomId, GameRoomState gameRoomState)
         {
-            var identity = Context?.User?.Identity as ClaimsIdentity;
-            var email = identity?.FindFirst(ClaimTypes.Email)?.Value;
             var gameRoomGrain = _grainFactory.GetGrain<IGameRoomGrain>(roomId);
-            await gameRoomGrain.SendGameState(email, Context!.ConnectionId, gameRoomState);
+            await gameRoomGrain.SendGameState( gameRoomState);
         }
 
         public override async Task OnConnectedAsync()

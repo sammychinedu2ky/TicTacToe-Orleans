@@ -9,8 +9,8 @@ export const authOptions = {
     authorized({ request, auth }) {
       //console.log('authoriszed')
       // remove game room from being protected
-      const protectedRoutes = ["/game-room", "/history"]
-      console.log(request.nextUrl.pathname)
+      // const protectedRoutes = ["/game-room", "/history"]
+      const protectedRoutes = [ "/history"]
       console.log("swaaaaaaaaaaaaaaaac")
       const isLoggedIn = !!auth
       let containsProtectedRoute = false;

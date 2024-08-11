@@ -5,6 +5,7 @@ import { GameRoomDTO } from "@/interfaces/interface"
 import fetcher from "@/utils/fetch"
 import notify from "@/utils/notify"
 import { useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
 import { use, useEffect, useState } from "react"
 import useSWR from "swr"
 import { validate } from "uuid"
@@ -13,8 +14,9 @@ export default function Page({ params }: { params: { gameId: string } }) {
     let gameId: string = params.gameId
     const session = useSession()
     const connection = useSignalR()
+    const router = useRouter()
     let initialGameState: GameRoomDTO = {
-        Board: [["X", "O", "X"], ["a", "b", "c"], ["", "", ""]],
+        Board: [[" ", " ", " "], [" ", " ", " "], [" ", " ", " "]],
         Draw: 0,
         O: "",
         X: "sa",
@@ -54,6 +56,7 @@ export default function Page({ params }: { params: { gameId: string } }) {
             })
             connection.on("ReceiveError", (error: string) => {
                 notify(error)
+                router.push("/")
             })
         }
     })
@@ -68,6 +71,10 @@ export default function Page({ params }: { params: { gameId: string } }) {
 
 
     function handleBoardClick(index: number, cell: string): void {
+        if (!isAuthenticated) {
+            notify("Not authenticated")
+            return
+        }
         if (cell.length > 0) {
             notify("Already clicked")
             return
@@ -102,7 +109,7 @@ export default function Page({ params }: { params: { gameId: string } }) {
                     </div>
                 </>}
             <div className="text-center m-auto mt-4">Turn to play: {userFromTurn()}</div>
-            <div className="text-center m-auto grid grid-cols-3  h-[70vh] w-8/12 mt-12 border-8 border-red-400 rounded-md">
+            <div className="text-center m-auto grid grid-cols-3  h-[50vh] w-8/12 mt-12 border-8 border-red-400 rounded-md">
                 {flatBoard.map((cell, index) => <div className="border text-center flex items-center justify-center border-red-400 " key={index} onClick={() => handleBoardClick(index, cell)}>{cell}</div>)}
             </div>
         </>

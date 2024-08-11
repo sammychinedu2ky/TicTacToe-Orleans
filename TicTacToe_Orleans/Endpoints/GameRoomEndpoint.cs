@@ -52,8 +52,6 @@ namespace TicTacToe_Orleans.Endpoints
                 {
                     Id = Guid.NewGuid(),
                     Type = gameRoomDto.Type
-                
-
                 };
                 Invitation? invitation = null;
                 if (!String.IsNullOrEmpty(gameRoomDto.Email))

@@ -5,25 +5,30 @@ import { GameRoomDTO } from "@/interfaces/interface"
 import fetcher from "@/utils/fetch"
 import notify from "@/utils/notify"
 import { useSession } from "next-auth/react"
-import { useEffect, useState } from "react"
+import { use, useEffect, useState } from "react"
 import useSWR from "swr"
+import { validate } from "uuid"
 
 export default function Page({ params }: { params: { gameId: string } }) {
     let gameId: string = params.gameId
     const session = useSession()
     const connection = useSignalR()
     let initialGameState: GameRoomDTO = {
-        board: [["x", "o", "x"], ["a", "b", "c"], ["", "", ""]],
+        board: [["X", "O", "X"], ["a", "b", "c"], ["", "", ""]],
         draw: 0,
         o: "",
-        x: "",
+        x: "sa",
         oWins: 0,
         xWins: 0,
-        turn: "",
+        turn: "x",
         winner: ""
     }
 
     const [gameState, setGameState] = useState<GameRoomDTO>(initialGameState)
+    if(!validate(gameId)) {
+        notify("Invalid game id")
+        return <div>Invalid game id</div>
+    }
     const { data, isLoading } = useSWR(`${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/game-room/${gameId}`, async (url: string) => {
         try {
             const res = await fetcher(url)
@@ -39,7 +44,7 @@ export default function Page({ params }: { params: { gameId: string } }) {
 
             notify("Error fetching game info")
         }
-    })
+    }, { revalidateIfStale: false, revalidateOnFocus: false, revalidateOnReconnect: false })
     let isAuthenticated = session.status == "authenticated"
     useEffect(() => {
         if (connection && isAuthenticated) {
@@ -47,22 +52,59 @@ export default function Page({ params }: { params: { gameId: string } }) {
                 console.log("received invite realtime", gameRoomDTO)
                 // Task ReceiveInviteAsync(string userId, InvitationDTO invite);
             })
+            connection.on("ReceiveError", (error: string) => {
+                notify(error)
+            })
         }
     })
+    useEffect(() => {
+        if (connection && isAuthenticated) {
+            connection.invoke("JoinGameRoom", gameId)
+        }
+    }, [connection])
     let flatBoard = gameState.board.flat()
     let turn = gameState.turn
     console.log(flatBoard)
+
+
+    function handleBoardClick(index: number, cell: string): void {
+        if (cell.length > 0) {
+            notify("Already clicked")
+            return
+        }
+        
+        alert(session?.data?.user?.email)
+        if (userFromTurn() !== session?.data?.user?.email) {
+            notify("Not your turn")
+            return
+        }
+        let [row, col] = customConverter(index)
+        let newBoard = { ...gameState }
+        newBoard.board[row][col] = gameState["turn"]
+        connection?.invoke("SendGameState", newBoard)
+    }
+    function userFromTurn(){
+        
+        if(gameState["turn"] === 'x'){
+            return gameState["x"]
+        }else{
+            return gameState["o"]
+        }
+    }
     return (
         <>
             {isLoading && <div className="text-center mt-8">Loading...</div>}
             {!isLoading && data &&
                 <>
-                    <div className="text-center m-auto mt-4">Turn to play: {turn}</div>
+                    <div className="text-center m-auto mt-4">Turn to play: {userFromTurn()}</div>
                     <div className="text-center m-auto grid grid-cols-3  h-[70vh] w-8/12 mt-12 border-8 border-red-400 rounded-md">
-                        {flatBoard.map((cell, index) => <div className="border text-center flex items-center justify-center border-red-400 " key={index}>{cell}</div>)}
+                        {flatBoard.map((cell, index) => <div className="border text-center flex items-center justify-center border-red-400 " key={index} onClick={() => handleBoardClick(index, cell)}>{cell}</div>)}
                     </div>
-
                 </>}
+            <div className="text-center m-auto mt-4">Turn to play: {userFromTurn()}</div>
+            <div className="text-center m-auto grid grid-cols-3  h-[70vh] w-8/12 mt-12 border-8 border-red-400 rounded-md">
+                {flatBoard.map((cell, index) => <div className="border text-center flex items-center justify-center border-red-400 " key={index} onClick={() => handleBoardClick(index, cell)}>{cell}</div>)}
+            </div>
         </>
     )
 }

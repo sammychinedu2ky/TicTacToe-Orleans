@@ -14,6 +14,7 @@ using Orleans.Runtime;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http.Json;
 var builder = WebApplication.CreateBuilder(args);
 
 IdentityModelEventSource.ShowPII = true;
@@ -50,6 +51,10 @@ builder.Services.AddAuthorization(options =>
        
     
     });
+});
+builder.Services.Configure<JsonOptions>(options =>
+{
+    options.SerializerOptions.PropertyNamingPolicy = null;
 });
 builder.Services.AddCors(options =>
 {

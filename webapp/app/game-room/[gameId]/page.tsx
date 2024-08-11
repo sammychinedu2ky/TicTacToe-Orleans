@@ -14,14 +14,14 @@ export default function Page({ params }: { params: { gameId: string } }) {
     const session = useSession()
     const connection = useSignalR()
     let initialGameState: GameRoomDTO = {
-        board: [["X", "O", "X"], ["a", "b", "c"], ["", "", ""]],
-        draw: 0,
-        o: "",
-        x: "sa",
-        oWins: 0,
-        xWins: 0,
-        turn: "x",
-        winner: ""
+        Board: [["X", "O", "X"], ["a", "b", "c"], ["", "", ""]],
+        Draw: 0,
+        O: "",
+        X: "sa",
+        OWins: 0,
+        XWins: 0,
+        Turn: "X",
+        Winner: ""
     }
 
     const [gameState, setGameState] = useState<GameRoomDTO>(initialGameState)
@@ -50,7 +50,7 @@ export default function Page({ params }: { params: { gameId: string } }) {
         if (connection && isAuthenticated) {
             connection.on("ReceiveGameState", (gameRoomDTO: GameRoomDTO) => {
                 console.log("received invite realtime", gameRoomDTO)
-                // Task ReceiveInviteAsync(string userId, InvitationDTO invite);
+                setGameState(gameRoomDTO)
             })
             connection.on("ReceiveError", (error: string) => {
                 notify(error)
@@ -62,8 +62,8 @@ export default function Page({ params }: { params: { gameId: string } }) {
             connection.invoke("JoinGameRoom", gameId)
         }
     }, [connection])
-    let flatBoard = gameState.board.flat()
-    let turn = gameState.turn
+    let flatBoard = gameState.Board.flat()
+    let turn = gameState.Turn
     console.log(flatBoard)
 
 
@@ -79,16 +79,16 @@ export default function Page({ params }: { params: { gameId: string } }) {
             return
         }
         let [row, col] = customConverter(index)
-        let newBoard = { ...gameState }
-        newBoard.board[row][col] = gameState["turn"]
-        connection?.invoke("SendGameState", newBoard)
+        let newBoard:GameRoomDTO = { ...gameState }
+        newBoard.Board[row][col] = gameState["Turn"]
+        connection?.invoke("SendGameState", gameId, newBoard)
     }
     function userFromTurn(){
         
-        if(gameState["turn"] === 'x'){
-            return gameState["x"]
+        if(gameState["Turn"] === 'X'){
+            return gameState["X"]
         }else{
-            return gameState["o"]
+            return gameState["O"]
         }
     }
     return (

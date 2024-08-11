@@ -48,7 +48,7 @@ export default function Invitation() {
 
                 : <div>
                     {isLoading && <div className="text-center mt-8">Loading...</div>}
-                    {!isLoading && data && data.length > 0 && data.map((invitation: InvitationDTO) => <InvitationCard key={invitation.id} invitation={invitation} mutate={mutate} />)}
+                    {!isLoading && data && data.length > 0 && data.map((invitation: InvitationDTO) => <InvitationCard key={invitation.Id} invitation={invitation} mutate={mutate} />)}
                     {/* {dum.map((invite: any) => <InvitationCard key={invite.Id} invitation={invite} />)} */}
                 </div>}
         </>

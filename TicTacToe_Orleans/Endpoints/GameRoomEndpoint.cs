@@ -50,7 +50,7 @@ namespace TicTacToe_Orleans.Endpoints
                 var user = identity?.FindFirst(ClaimTypes.Email)?.Value;
                 var gameRoom = new GameRoom
                 {
-                    Id = Guid.NewGuid(),
+                    Id = gameRoomDto.Id,
                     Type = gameRoomDto.Type
                 };
                 Invitation? invitation = null;

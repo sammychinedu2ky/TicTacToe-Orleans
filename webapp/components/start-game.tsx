@@ -88,7 +88,7 @@ async function myAction(router: AppRouterInstance, prevState: null | void, query
             if (checkIfUserExists.ok) {
                 var gameRoom = uuid();
                 try {
-                    await postFetcher(`${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/game-room`,{ Id: gameRoom, Type: "User", Email: email })
+                    await postFetcher(`${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/game-room`,{ id: gameRoom, type: "User", email: email })
                     // redirect to game room
                     router.push(`/game-room/${gameRoom}`)
                     return;
@@ -111,7 +111,7 @@ async function myAction(router: AppRouterInstance, prevState: null | void, query
     else {
         let gameRoom = uuid();
         try {
-            await postFetcher(`${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/game-room`, { Id: gameRoom, Type: "Computer" })
+            await postFetcher(`${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/game-room`, { id: gameRoom, type: "Computer" })
             // redirect to game room
             router.push(`/game-room/${gameRoom}`)
             return;

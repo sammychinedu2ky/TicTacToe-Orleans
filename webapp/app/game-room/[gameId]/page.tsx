@@ -16,18 +16,18 @@ export default function Page({ params }: { params: { gameId: string } }) {
     const connection = useSignalR()
     const router = useRouter()
     let initialGameState: GameRoomDTO = {
-        Board: [[" ", " ", " "], [" ", " ", " "], [" ", " ", " "]],
-        Draw: 0,
-        O: "",
-        X: "sa",
-        OWins: 0,
-        XWins: 0,
-        Turn: "X",
-        Winner: ""
+        board: [[" ", " ", " "], [" ", " ", " "], [" ", " ", " "]],
+        draw: 0,
+        o: "",
+        x: "",
+        oWins: 0,
+        xWins: 0,
+        turn: "X",
+        winner: ""
     }
 
     const [gameState, setGameState] = useState<GameRoomDTO>(initialGameState)
-    if(!validate(gameId)) {
+    if (!validate(gameId)) {
         notify("Invalid game id")
         return <div>Invalid game id</div>
     }
@@ -50,6 +50,7 @@ export default function Page({ params }: { params: { gameId: string } }) {
     let isAuthenticated = session.status == "authenticated"
     useEffect(() => {
         if (connection && isAuthenticated) {
+            console.log('swacky')
             connection.on("ReceiveGameState", (gameRoomDTO: GameRoomDTO) => {
                 console.log("received invite realtime", gameRoomDTO)
                 setGameState(gameRoomDTO)
@@ -61,12 +62,18 @@ export default function Page({ params }: { params: { gameId: string } }) {
         }
     })
     useEffect(() => {
-        if (connection && isAuthenticated) {
+        console.log('connection', connection)
+        console.log('isauthenticated', isAuthenticated)
+        console.log('connection state', connection?.state)
+        if (connection && isAuthenticated && connection.state === "Connected") {
+
             connection.invoke("JoinGameRoom", gameId)
         }
-    }, [connection])
-    let flatBoard = gameState.Board.flat()
-    let turn = gameState.Turn
+        
+
+    })
+    let flatBoard = gameState.board.flat()
+    let turn = gameState.turn
     console.log(flatBoard)
 
 
@@ -75,27 +82,27 @@ export default function Page({ params }: { params: { gameId: string } }) {
             notify("Not authenticated")
             return
         }
-        if (cell.length > 0) {
+        if (cell === 'x' || cell === 'o') {
             notify("Already clicked")
             return
         }
-        
+
         alert(session?.data?.user?.email)
         if (userFromTurn() !== session?.data?.user?.email) {
             notify("Not your turn")
             return
         }
         let [row, col] = customConverter(index)
-        let newBoard:GameRoomDTO = { ...gameState }
-        newBoard.Board[row][col] = gameState["Turn"]
+        let newBoard: GameRoomDTO = { ...gameState }
+        newBoard.board[row][col] = gameState["turn"]
         connection?.invoke("SendGameState", gameId, newBoard)
     }
-    function userFromTurn(){
-        
-        if(gameState["Turn"] === 'X'){
-            return gameState["X"]
-        }else{
-            return gameState["O"]
+    function userFromTurn() {
+
+        if (gameState["turn"] === 'x') {
+            return gameState["x"]
+        } else {
+            return gameState["o"]
         }
     }
     return (
@@ -104,14 +111,10 @@ export default function Page({ params }: { params: { gameId: string } }) {
             {!isLoading && data &&
                 <>
                     <div className="text-center m-auto mt-4">Turn to play: {userFromTurn()}</div>
-                    <div className="text-center m-auto grid grid-cols-3  h-[70vh] w-8/12 mt-12 border-8 border-red-400 rounded-md">
-                        {flatBoard.map((cell, index) => <div className="border text-center flex items-center justify-center border-red-400 " key={index} onClick={() => handleBoardClick(index, cell)}>{cell}</div>)}
+                    <div className="text-center m-auto grid grid-cols-3  h-[50vh] w-8/12 mt-12 border-8 border-red-400 rounded-md">
+                        {flatBoard.map((cell, index) => <div className="border text-center flex items-center justify-center border-red-400 " key={index} onClick={() => handleBoardClick(index, cell)}>{cell.toUpperCase()}</div>)}
                     </div>
                 </>}
-            <div className="text-center m-auto mt-4">Turn to play: {userFromTurn()}</div>
-            <div className="text-center m-auto grid grid-cols-3  h-[50vh] w-8/12 mt-12 border-8 border-red-400 rounded-md">
-                {flatBoard.map((cell, index) => <div className="border text-center flex items-center justify-center border-red-400 " key={index} onClick={() => handleBoardClick(index, cell)}>{cell}</div>)}
-            </div>
         </>
     )
 }

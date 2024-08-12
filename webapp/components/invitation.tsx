@@ -15,9 +15,12 @@ export default function Invitation() {
     const connection = useSignalR()
     const { data, error, isLoading, mutate } = useSWR(`${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/invitations/my-invites`, async (url) => {
         try {
+            if(session.status == "authenticated"){
             const res = await fetcher(url)
             return await res.json()
+            }
         } catch (error) {
+            console.log("error fetching invites", error)
             notify("Error fetching invites")
         }
     })
@@ -32,7 +35,9 @@ export default function Invitation() {
     })
     // use tool tip to show error
     console.log(error)
-    console.log(data)
+    console.log("my data",data)
+    if(data?.length>0)
+    console.log('my id ', data[0]?.id)
     let isUserAuthenticated = session.status == "authenticated"
 
     return (
@@ -48,7 +53,7 @@ export default function Invitation() {
 
                 : <div>
                     {isLoading && <div className="text-center mt-8">Loading...</div>}
-                    {!isLoading && data && data.length > 0 && data.map((invitation: InvitationDTO) => <InvitationCard key={invitation.Id} invitation={invitation} mutate={mutate} />)}
+                    {!isLoading && data && data.length > 0 && data.map((invitation: InvitationDTO) => <InvitationCard key={invitation.id} invitation={invitation} mutate={mutate} />)}
                     {/* {dum.map((invite: any) => <InvitationCard key={invite.Id} invitation={invite} />)} */}
                 </div>}
         </>

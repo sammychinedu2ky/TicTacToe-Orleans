@@ -17,7 +17,7 @@ namespace TicTacToe_Orleans.Hubs
             _dbContext = dbContext;
             _grainFactory = grainFactory;
         }
-        public async Task JoinRoom(Guid roomId)
+        public async Task JoinGameRoom(Guid roomId)
         {
             // check if a gameplay exists
             var exists = await _dbContext.GameRooms.AnyAsync(x => x.Id == roomId);
@@ -29,7 +29,7 @@ namespace TicTacToe_Orleans.Hubs
             var identity = Context?.User?.Identity as ClaimsIdentity;
             var email = identity?.FindFirst(ClaimTypes.Email)?.Value;
             var gameRoomGrain = _grainFactory.GetGrain<IGameRoomGrain>(roomId);
-            await gameRoomGrain.JoinRoom(email, Context!.ConnectionId);
+            await gameRoomGrain.JoinGameRoom(email, Context!.ConnectionId);
 
         }
 

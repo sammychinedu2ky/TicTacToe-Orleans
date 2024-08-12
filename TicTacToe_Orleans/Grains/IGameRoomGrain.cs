@@ -2,7 +2,7 @@
 {
     public interface IGameRoomGrain : IGrainWithGuidKey
     {
-        Task JoinRoom(string? userId, string connectionId);
+        Task JoinGameRoom(string? userId, string connectionId);
         Task SendGameState(GameRoomState gameRoomState);
         Task PlayAgain();
     }

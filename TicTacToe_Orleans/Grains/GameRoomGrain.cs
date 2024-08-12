@@ -1,34 +1,41 @@
 ﻿
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Orleans.Runtime;
 using TicTacToe_Orleans.Hubs;
 using TicTacToe_Orleans.Model;
 
 namespace TicTacToe_Orleans.Grains
 {
-    public class GameRoomGrain : IGameRoomGrain
+    public class GameRoomGrain : IGameRoomGrain, IDisposable
     {
         private IDbContextFactory<ApplicationDbContext> _dbContextFactory;
         private readonly IHubContext<GameRoomHub, IGameRoomClient> _hubContext;
         private readonly IGrainFactory? _grainFactory;
+        private IGrainContext _grainContext;
+        private Guid _grainId;
+
         private GameRoomType? _gameRoomType { get; set; }
         public GameRoomState State { get; set; } = new GameRoomState();
 
         public GameRoomGrain(IDbContextFactory<ApplicationDbContext> dbContextFactory,
             IHubContext<GameRoomHub, IGameRoomClient> hubContext,
-            IGrainFactory grainFactory)
+            IGrainFactory grainFactory,
+            IGrainContext grainContext)
         {
             _dbContextFactory = dbContextFactory;
             _hubContext = hubContext;
-            this._grainFactory = grainFactory;
+            _grainFactory = grainFactory;
+            _grainContext = grainContext;
+            _grainId = new Guid(_grainContext.GrainId.Key.ToString()!);
         }
-        public async Task JoinRoom(string? userId, string connectionId)
+        public async Task JoinGameRoom(string? userId, string connectionId)
         {
             if (_gameRoomType is null)
             {
-                using (var dbContext = _dbContextFactory.CreateDbContext())
+                using (var dbContext = await _dbContextFactory.CreateDbContextAsync())
                 {
-                    var gameRoom = await dbContext.GameRooms.FindAsync(this.GetPrimaryKey());
+                    var gameRoom = await dbContext.GameRooms.FindAsync(_grainId);
                     _gameRoomType = gameRoom!.Type;
                 }
             }
@@ -38,10 +45,18 @@ namespace TicTacToe_Orleans.Grains
                 var check = await connectionGrain.IsConnectedAsync(userId);
                 if (!check)
                 {
-                    await _hubContext.Groups.AddToGroupAsync(connectionId, this.GetPrimaryKey().ToString());
+                    await _hubContext.Groups.AddToGroupAsync(connectionId, _grainId.ToString());
                     await connectionGrain.AddUserAsync(userId, connectionId);
                     AssignState(userId);
+                    try
+                    {
+
                     await _hubContext.Clients.Client(connectionId).ReceiveGameState(State);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
+                    }
                 }
                 else
                 {
@@ -52,7 +67,7 @@ namespace TicTacToe_Orleans.Grains
             }
             else
             {
-                await _hubContext.Groups.AddToGroupAsync(connectionId, this.GetPrimaryKey().ToString());
+                await _hubContext.Groups.AddToGroupAsync(connectionId, _grainId.ToString());
                 await connectionGrain.AddUserAsync(null, connectionId);
                 await _hubContext.Clients.Client(connectionId).ReceiveGameState(State);
             }
@@ -78,7 +93,7 @@ namespace TicTacToe_Orleans.Grains
                 gameRoomState.Winner = "Draw";
                 gameRoomState.Draw++;
                 State = gameRoomState;
-                await _hubContext.Clients.Group(this.GetPrimaryKey().ToString()).ReceiveGameState(gameRoomState);
+                await _hubContext.Clients.Group(_grainId.ToString()).ReceiveGameState(gameRoomState);
             }
             if (HasWon(gameRoomState))
             {
@@ -92,7 +107,7 @@ namespace TicTacToe_Orleans.Grains
                     gameRoomState.OWins++;
                 }
                 State = gameRoomState;
-                await _hubContext.Clients.Group(this.GetPrimaryKey().ToString()).ReceiveGameState(gameRoomState);
+                await _hubContext.Clients.Group(_grainId.ToString()).ReceiveGameState(gameRoomState);
             }
             if (player == 'X')
             {
@@ -103,7 +118,7 @@ namespace TicTacToe_Orleans.Grains
                 gameRoomState.Turn = 'X';
             }
             State = gameRoomState;
-           await  _hubContext.Clients.Group(this.GetPrimaryKey().ToString()).ReceiveGameState(gameRoomState);
+           await  _hubContext.Clients.Group(_grainId.ToString()).ReceiveGameState(gameRoomState);
         }
 
         private bool HasWon(GameRoomState gameRoomState)
@@ -180,6 +195,11 @@ namespace TicTacToe_Orleans.Grains
             State.Board = board;
             State.Turn = 'X';
             await _hubContext.Clients.Group(this.GetPrimaryKey().ToString()).ReceiveGameState(State);
+        }
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
         }
     }
 }

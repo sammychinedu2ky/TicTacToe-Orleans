@@ -32,6 +32,7 @@ export default function Invitation() {
                 mutate({ data: [invitation, ...data] })
             })
         }
+        return () => {connection?.stop()}
     })
     // use tool tip to show error
     console.log(error)

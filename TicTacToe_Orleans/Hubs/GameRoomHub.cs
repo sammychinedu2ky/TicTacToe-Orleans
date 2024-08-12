@@ -23,7 +23,7 @@ namespace TicTacToe_Orleans.Hubs
             var exists = await _dbContext.GameRooms.AnyAsync(x => x.Id == roomId);
             if (!exists)
             {
-                await Clients.Caller.ReceiveError(Context.ConnectionId, "Game room does not exist");
+                await Clients.Caller.ReceiveError("Game room does not exist");
                 return;
             }
             var identity = Context?.User?.Identity as ClaimsIdentity;
@@ -48,7 +48,10 @@ namespace TicTacToe_Orleans.Hubs
 
                 await Groups.AddToGroupAsync(Context!.ConnectionId, email);
             }
+
             await base.OnConnectedAsync();
+            await Clients.Caller.Connected();
+            
         }
         public override async Task OnDisconnectedAsync(Exception? exception)
         {

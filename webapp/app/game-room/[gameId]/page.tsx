@@ -57,21 +57,15 @@ export default function Page({ params }: { params: { gameId: string } }) {
             })
             connection.on("ReceiveError", (error: string) => {
                 notify(error)
-                router.push("/")
+                console.log("error", error)
+                //router.push("/")
+            })
+            connection.on("Connected",()=>{
+                connection.invoke("JoinGameRoom", gameId)
             })
         }
-    })
-    useEffect(() => {
-        console.log('connection', connection)
-        console.log('isauthenticated', isAuthenticated)
-        console.log('connection state', connection?.state)
-        if (connection && isAuthenticated && connection.state === "Connected") {
-
-            connection.invoke("JoinGameRoom", gameId)
-        }
-        
-
-    })
+    },[connection])
+ 
     let flatBoard = gameState.board.flat()
     let turn = gameState.turn
     console.log(flatBoard)

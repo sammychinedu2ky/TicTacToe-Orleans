@@ -21,7 +21,10 @@ namespace TicTacToe_Orleans.Authorization
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-
+            if(Context!.Request.Method == HttpMethod.Options.ToString())
+            {
+                return  AuthenticateResult.NoResult();
+            }
             if (Context!.Request.Cookies.TryGetValue("authToken", out var jwtToken))
             {
                 var tokenHandler = new JwtSecurityTokenHandler();

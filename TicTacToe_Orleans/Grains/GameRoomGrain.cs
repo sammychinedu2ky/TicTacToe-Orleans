@@ -61,7 +61,7 @@ namespace TicTacToe_Orleans.Grains
                 else
                 {
 
-                    await _hubContext.Clients.Client(connectionId).ReceiveError(connectionId, "Can't join more than one room");
+                    await _hubContext.Clients.Client(connectionId).ReceiveError( "Can't join more than one room");
                     return;
                 }
             }

@@ -49,7 +49,7 @@ namespace TicTacToe_Orleans.Grains
                     }
                 }
             }
-            var connectionGrain = _grainFactory!.GetGrain<IConnectionGrain>(userId);
+            var connectionGrain = _grainFactory!.GetGrain<IConnectionGrain>(nameof(MyConnections));
             if (!String.IsNullOrEmpty(userId))
             {
                 var check = await connectionGrain.IsConnectedAsync(userId);

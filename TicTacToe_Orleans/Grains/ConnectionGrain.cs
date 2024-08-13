@@ -4,36 +4,36 @@ namespace TicTacToe_Orleans.Grains
 {
     public class ConnectionGrain : IConnectionGrain
     {
-        public Dictionary<string, string> AuthenticatedUsers { get; set; } = [];
-        public HashSet<string> AnonymousUsers { get; set; } = [];
+        private Dictionary<string, string> _authenticatedUsers { get; set; } = [];
+        private HashSet<string> _anonymousUsers { get; set; } = [];
        
         public Task AddUserAsync(string? userId, string connectionId)
         {
             if (String.IsNullOrEmpty(userId))
             {
-                AnonymousUsers.Add(connectionId);
+                _anonymousUsers.Add(connectionId);
             }
             else
             {
-                AuthenticatedUsers.Add(userId, connectionId);
+                _authenticatedUsers.Add(userId, connectionId);
             }
             return Task.CompletedTask;
         }
 
         public Task<bool> IsConnectedAsync(string userId)
         {
-            return Task.FromResult(AuthenticatedUsers.ContainsKey(userId));
+            return Task.FromResult(_authenticatedUsers.ContainsKey(userId));
         }
 
         public Task RemoveUserAsync(string? userId, string connectionId)
         {
             if (String.IsNullOrEmpty(userId))
             {
-                AnonymousUsers.Remove(connectionId);
+                _anonymousUsers.Remove(connectionId);
             }
             else
             {
-                AuthenticatedUsers.Remove(userId);
+                _authenticatedUsers.Remove(userId);
             }
             return Task.CompletedTask;
         }

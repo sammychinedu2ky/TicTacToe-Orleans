@@ -39,7 +39,7 @@ export default function Invitation() {
                }
             })
         }
-         return () => {connection?.stop()}
+       //  return () => {connection?.stop()}
     },[connection])
     // use tool tip to show error
     console.log(error)

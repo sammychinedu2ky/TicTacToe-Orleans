@@ -6,7 +6,7 @@
         public string? X { get; set; }
         public string? O { get; set; }
         public string? Winner { get; set; }
-        public char Turn { get; set; } = 'X';
+        public char Turn { get; set; } = 'x';
         public int XWins { get; set; }
         public int OWins { get; set; }
         public int Draw { get; set; }

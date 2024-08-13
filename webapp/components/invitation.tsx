@@ -27,13 +27,20 @@ export default function Invitation() {
     useEffect(() => {
         if (connection && session.status == "authenticated") {
             connection.on("ReceiveInvite", (invitation: InvitationDTO) => {
-                console.log("received invite realtime", invitation)
+                console.log("received invite realtime", invitation,"sam invite")
                 // Task ReceiveInviteAsync(string userId, InvitationDTO invite);
-                mutate({ data: [invitation, ...data] })
+               // console.log("samdd invite",{data:[invitation,...data]})
+               if(data != undefined){
+                mutate({data:[invitation,...data]}).then(() => console.log("mutated"))
+               }
+               else{
+
+                   mutate({ invitation }).then(() => console.log("mutated"))
+               }
             })
         }
-        return () => {connection?.stop()}
-    })
+         return () => {connection?.stop()}
+    },[connection])
     // use tool tip to show error
     console.log(error)
     console.log("my data",data)

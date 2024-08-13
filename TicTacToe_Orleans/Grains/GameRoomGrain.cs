@@ -37,6 +37,8 @@ namespace TicTacToe_Orleans.Grains
                 {
                     var gameRoom = await dbContext.GameRooms.FindAsync(_grainId);
                     _gameRoomType = gameRoom!.Type;
+                    State.X = gameRoom.X;
+                    State.O = gameRoom.O;
                 }
             }
             var connectionGrain = _grainFactory!.GetGrain<IConnectionGrain>(userId);
@@ -94,11 +96,12 @@ namespace TicTacToe_Orleans.Grains
                 gameRoomState.Draw++;
                 State = gameRoomState;
                 await _hubContext.Clients.Group(_grainId.ToString()).ReceiveGameState(gameRoomState);
+                return;
             }
             if (HasWon(gameRoomState))
             {
                 gameRoomState.Winner = player.ToString();
-                if (player == 'X')
+                if (player == 'x')
                 {
                     gameRoomState.XWins++;
                 }
@@ -108,14 +111,15 @@ namespace TicTacToe_Orleans.Grains
                 }
                 State = gameRoomState;
                 await _hubContext.Clients.Group(_grainId.ToString()).ReceiveGameState(gameRoomState);
+                return;
             }
-            if (player == 'X')
+            if (player == 'x')
             {
-                gameRoomState.Turn = 'O';
+                gameRoomState.Turn = 'o';
             }
             else
             {
-                gameRoomState.Turn = 'X';
+                gameRoomState.Turn = 'x';
             }
             State = gameRoomState;
            await  _hubContext.Clients.Group(_grainId.ToString()).ReceiveGameState(gameRoomState);
@@ -168,16 +172,16 @@ namespace TicTacToe_Orleans.Grains
             return true;
         }
 
-        private async Task SaveToDb(GameRoomState goomRoomState)
+        private async Task SaveToDb()
         {
             using (var dbContext = _dbContextFactory.CreateDbContext())
             {
                 var gameRoom = await dbContext.GameRooms.FindAsync(this.GetPrimaryKey());
-                gameRoom.X = goomRoomState.X;
-                gameRoom.O = goomRoomState.O;
-                gameRoom.XWins = goomRoomState.XWins;
-                gameRoom.OWins = goomRoomState.OWins;
-                gameRoom.Draw = goomRoomState.Draw;
+                gameRoom.X = State.X;
+                gameRoom.O = State.O;
+                gameRoom.XWins = State.XWins;
+                gameRoom.OWins = State.OWins;
+                gameRoom.Draw = State.Draw;
                 gameRoom.Type = _gameRoomType!.Value;
                 await dbContext.SaveChangesAsync();
 
@@ -193,7 +197,7 @@ namespace TicTacToe_Orleans.Grains
                 new List<char> { ' ', ' ', ' ' }
             };
             State.Board = board;
-            State.Turn = 'X';
+            State.Turn = 'x';
             await _hubContext.Clients.Group(this.GetPrimaryKey().ToString()).ReceiveGameState(State);
         }
 

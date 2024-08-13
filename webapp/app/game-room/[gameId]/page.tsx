@@ -22,7 +22,7 @@ export default function Page({ params }: { params: { gameId: string } }) {
         x: "",
         oWins: 0,
         xWins: 0,
-        turn: "X",
+        turn: "x",
         winner: ""
     }
 
@@ -50,6 +50,7 @@ export default function Page({ params }: { params: { gameId: string } }) {
     let isAuthenticated = session.status == "authenticated"
     useEffect(() => {
         if (connection && isAuthenticated) {
+            console.log("connection iddddddddddd",connection.connectionId)
             console.log('swacky')
             connection.on("ReceiveGameState", (gameRoomDTO: GameRoomDTO) => {
                 console.log("received invite realtime", gameRoomDTO)
@@ -61,6 +62,7 @@ export default function Page({ params }: { params: { gameId: string } }) {
                 //router.push("/")
             })
             connection.on("Connected",()=>{
+                console.log("connnnnnnnnnnnnnnnnnected")
                 connection.invoke("JoinGameRoom", gameId)
             })
         }
@@ -89,6 +91,7 @@ export default function Page({ params }: { params: { gameId: string } }) {
         let [row, col] = customConverter(index)
         let newBoard: GameRoomDTO = { ...gameState }
         newBoard.board[row][col] = gameState["turn"]
+        console.log('newboarddddd',newBoard)
         connection?.invoke("SendGameState", gameId, newBoard)
     }
     function userFromTurn() {

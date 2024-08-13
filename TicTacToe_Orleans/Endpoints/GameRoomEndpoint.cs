@@ -51,7 +51,9 @@ namespace TicTacToe_Orleans.Endpoints
                 var gameRoom = new GameRoom
                 {
                     Id = gameRoomDto.Id,
-                    Type = gameRoomDto.Type
+                    Type = gameRoomDto.Type,
+                    X = user,
+                    O = gameRoomDto.Email
                 };
                 Invitation? invitation = null;
                 if (!String.IsNullOrEmpty(gameRoomDto.Email))

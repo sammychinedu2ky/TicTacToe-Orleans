@@ -36,9 +36,17 @@ namespace TicTacToe_Orleans.Grains
                 using (var dbContext = await _dbContextFactory.CreateDbContextAsync())
                 {
                     var gameRoom = await dbContext.GameRooms.FindAsync(_grainId);
-                    _gameRoomType = gameRoom!.Type;
-                    State.X = gameRoom.X;
-                    State.O = gameRoom.O;
+                    if (gameRoom is not null)
+                    {
+                        _gameRoomType = gameRoom!.Type;
+                        State.X = gameRoom.X;
+                        State.O = gameRoom.O;
+
+                    }
+                    else
+                    {
+                        await _hubContext.Clients.Client(connectionId).ReceiveError("Can't join more than one room");
+                    }
                 }
             }
             var connectionGrain = _grainFactory!.GetGrain<IConnectionGrain>(userId);
@@ -101,7 +109,7 @@ namespace TicTacToe_Orleans.Grains
             if (HasWon(gameRoomState))
             {
                 gameRoomState.Winner = player.ToString();
-                if (player == 'x')
+                if (player == "x")
                 {
                     gameRoomState.XWins++;
                 }
@@ -113,13 +121,13 @@ namespace TicTacToe_Orleans.Grains
                 await _hubContext.Clients.Group(_grainId.ToString()).ReceiveGameState(gameRoomState);
                 return;
             }
-            if (player == 'x')
+            if (player ==  "x")
             {
-                gameRoomState.Turn = 'o';
+                gameRoomState.Turn = "o";
             }
             else
             {
-                gameRoomState.Turn = 'x';
+                gameRoomState.Turn = "x";
             }
             State = gameRoomState;
            await  _hubContext.Clients.Group(_grainId.ToString()).ReceiveGameState(gameRoomState);
@@ -131,7 +139,7 @@ namespace TicTacToe_Orleans.Grains
             // horizontal
             for (var i = 0; i < board.Count; i++)
             {
-                if (board[i][0] == board[i][1] && board[i][1] == board[i][2])
+                if (board[i][0] != String.Empty && board[i][0] == board[i][1] && board[i][1] == board[i][2])
                 {
                     return true;
                 }
@@ -139,17 +147,17 @@ namespace TicTacToe_Orleans.Grains
             // vertical
             for (var i = 0; i < board.Count; i++)
             {
-                if (board[0][i] == board[1][i] && board[1][i] == board[2][i])
+                if (board[0][i] != String.Empty & board[0][i] == board[1][i] && board[1][i] == board[2][i])
                 {
                     return true;
                 }
             }
             // diagonal
-            if (board[0][0] == board[1][1] && board[1][1] == board[2][2])
+            if (board[0][0] != String.Empty & board[0][0] == board[1][1] && board[1][1] == board[2][2])
             {
                 return true;
             }
-            if (board[0][2] == board[1][1] && board[1][1] == board[2][0])
+            if (board[0][2] != string.Empty && board[0][2] == board[1][1] && board[1][1] == board[2][0])
             {
                 return true;
             }
@@ -163,7 +171,7 @@ namespace TicTacToe_Orleans.Grains
             {
                 for (var j = 0; j < board[i].Count; j++)
                 {
-                    if (board[i][j] == ' ')
+                    if (board[i][j] == String.Empty)
                     {
                         return false;
                     }
@@ -190,14 +198,14 @@ namespace TicTacToe_Orleans.Grains
 
         public async Task PlayAgain()
         {
-            var board = new List<List<char>>
-            {
-                new List<char> { ' ', ' ', ' ' },
-                new List<char> { ' ', ' ', ' ' },
-                new List<char> { ' ', ' ', ' ' }
-            };
-            State.Board = board;
-            State.Turn = 'x';
+            List<List<string>> board =  new()
+        {
+            new List<string> { "", "", "" },
+            new List<string> { "", "", "" },
+            new List<string> { "", "", "" }
+        };
+        State.Board = board;
+            State.Turn = "x";
             await _hubContext.Clients.Group(this.GetPrimaryKey().ToString()).ReceiveGameState(State);
         }
 

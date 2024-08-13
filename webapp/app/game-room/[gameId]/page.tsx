@@ -66,6 +66,7 @@ export default function Page({ params }: { params: { gameId: string } }) {
                 connection.invoke("JoinGameRoom", gameId)
             })
         }
+        return () => {connection?.stop()}
     },[connection])
  
     let flatBoard = gameState.board.flat()

@@ -38,6 +38,11 @@ namespace TicTacToe_Orleans.Hubs
             var gameRoomGrain = _grainFactory.GetGrain<IGameRoomGrain>(roomId);
             await gameRoomGrain.SendGameState( gameRoomState);
         }
+        public async Task PlayAgain(Guid roomId)
+        {
+            var gameRoomGrain = _grainFactory.GetGrain<IGameRoomGrain>(roomId);
+            await gameRoomGrain.PlayAgain();
+        }
 
         public override async Task OnConnectedAsync()
         {

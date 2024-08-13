@@ -57,7 +57,7 @@ namespace TicTacToe_Orleans.Grains
                 {
                     await _hubContext.Groups.AddToGroupAsync(connectionId, _grainId.ToString());
                     await connectionGrain.AddUserAsync(userId, connectionId);
-                    AssignState(userId);
+                    
                     try
                     {
 
@@ -82,17 +82,17 @@ namespace TicTacToe_Orleans.Grains
                 await _hubContext.Clients.Client(connectionId).ReceiveGameState(State);
             }
         }
-        public void AssignState(string userId)
+        public void AssignTurn()
         {
-            if (State.X is null)
+            if (State.Turn == "x")
             {
-                State.X = userId;
-                if (_gameRoomType == GameRoomType.Computer)
-                {
-                    State.O = "Computer";
-                }
+                State.Turn = "o";
             }
-            else State.O = userId;
+            else
+            {
+                State.Turn = "x";
+            }
+           
         }
 
         public async Task SendGameState(GameRoomState gameRoomState)
@@ -129,6 +129,7 @@ namespace TicTacToe_Orleans.Grains
             {
                 gameRoomState.Turn = "x";
             }
+           
             State = gameRoomState;
            await  _hubContext.Clients.Group(_grainId.ToString()).ReceiveGameState(gameRoomState);
         }

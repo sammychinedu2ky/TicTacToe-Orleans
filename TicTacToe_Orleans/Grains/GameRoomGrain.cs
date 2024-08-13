@@ -108,7 +108,8 @@ namespace TicTacToe_Orleans.Grains
             }
             if (HasWon(gameRoomState))
             {
-                gameRoomState.Winner = player.ToString();
+                gameRoomState.Winner = player;
+                var winnersName = gameRoomState.Winner == "x" ? gameRoomState.X : gameRoomState.O;
                 if (player == "x")
                 {
                     gameRoomState.XWins++;

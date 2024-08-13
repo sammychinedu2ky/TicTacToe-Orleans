@@ -7,6 +7,8 @@ import notify from "@/utils/notify"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { use, useEffect, useState } from "react"
+import Popup from 'reactjs-popup';
+import 'reactjs-popup/dist/index.css';
 import useSWR from "swr"
 import { validate } from "uuid"
 
@@ -50,7 +52,7 @@ export default function Page({ params }: { params: { gameId: string } }) {
     let isAuthenticated = session.status == "authenticated"
     useEffect(() => {
         if (connection && isAuthenticated) {
-            console.log("connection iddddddddddd",connection.connectionId)
+            console.log("connection iddddddddddd", connection.connectionId)
             console.log('swacky')
             connection.on("ReceiveGameState", (gameRoomDTO: GameRoomDTO) => {
                 console.log("received invite realtime", gameRoomDTO)
@@ -61,14 +63,14 @@ export default function Page({ params }: { params: { gameId: string } }) {
                 console.log("error", error)
                 //router.push("/")
             })
-            connection.on("Connected",()=>{
+            connection.on("Connected", () => {
                 console.log("connnnnnnnnnnnnnnnnnected")
                 connection.invoke("JoinGameRoom", gameId)
             })
         }
-        return () => {connection?.stop()}
-    },[connection])
- 
+        return () => { connection?.stop() }
+    }, [connection])
+
     let flatBoard = gameState.board.flat()
     let turn = gameState.turn
     console.log(flatBoard)
@@ -84,7 +86,10 @@ export default function Page({ params }: { params: { gameId: string } }) {
             return
         }
 
-        alert(session?.data?.user?.email)
+        if(gameState.winner !== ""){
+            notify("Game is over")
+            return
+        }
         if (userFromTurn() !== session?.data?.user?.email) {
             notify("Not your turn")
             return
@@ -92,7 +97,7 @@ export default function Page({ params }: { params: { gameId: string } }) {
         let [row, col] = customConverter(index)
         let newBoard: GameRoomDTO = { ...gameState }
         newBoard.board[row][col] = gameState["turn"]
-        console.log('newboarddddd',newBoard)
+        console.log('newboarddddd', newBoard)
         connection?.invoke("SendGameState", gameId, newBoard)
     }
     function userFromTurn() {
@@ -105,6 +110,7 @@ export default function Page({ params }: { params: { gameId: string } }) {
     }
     return (
         <>
+          
             {isLoading && <div className="text-center mt-8">Loading...</div>}
             {!isLoading && data &&
                 <>
@@ -113,6 +119,15 @@ export default function Page({ params }: { params: { gameId: string } }) {
                         {flatBoard.map((cell, index) => <div className="border text-center flex items-center justify-center border-red-400 " key={index} onClick={() => handleBoardClick(index, cell)}>{cell.toUpperCase()}</div>)}
                     </div>
                 </>}
+            <div className="border-2 border-red-900 fixed flex items-center justify-center h-[100vh]   w-full   bg-gray-400">
+                    <div className="w-4/12 h-2/6 bg-red-400 rounded-md">
+                        <div className="text-center text-white text-2xl">Game Over</div>
+                        <div className="text-center text-white text-2xl">Winner: {gameState.winner}</div>
+                        <div className="text-center text-white text-2xl">X Wins: {gameState.xWins}</div>
+                        <div className="text-center text-white text-2xl">O Wins: {gameState.oWins}</div>
+                        <div className="text-center text-white text-2xl">Draws: {gameState.draw}</div>
+                    </div>
+            </div>
         </>
     )
 }

@@ -225,6 +225,7 @@ namespace TicTacToe_Orleans.Grains
         private (int i, int j) MiniMax(GameRoomState state)
         {
             var bestScore = int.MinValue;
+            var depth = int.MaxValue;
             var move = (0, 0);
             for (int m = 0; m < state.Board.Count; m++)
             {
@@ -234,9 +235,11 @@ namespace TicTacToe_Orleans.Grains
                     {
 
                         state.Board[m][n] = "o";
-                        var score = ComputerPlay(state.Board, 0).Score;
+                        var play = ComputerPlay(state.Board, 0);
+                        var score = play.Score;
+                        var scoreDepth = play.depth;
                         state.Board[m][n] = String.Empty;
-                        if (score > bestScore)
+                        if (score > bestScore && scoreDepth < depth)
                         {
                             bestScore = score;
                             move = (m, n);
@@ -268,7 +271,8 @@ namespace TicTacToe_Orleans.Grains
                     {
 
                         board[i][j] = player;
-                        var score = VirtualUserPlay(board, depth + 1).Score;
+                        var play = VirtualUserPlay(board, depth + 1);
+                        var score = play.Score;
                         board[i][j] = String.Empty;
                         bestScore = Math.Min(score, bestScore);
                     }

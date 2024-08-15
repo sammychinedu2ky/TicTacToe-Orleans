@@ -29,7 +29,7 @@ export default async function Header() {
     }
     return (
         <>
-            <nav className="flex  h-16  items-center pl-4 justify-start md:justify-center md:pl-0  bg-red-400">
+            <nav className="flex relative  h-16  items-center pl-4 justify-start md:justify-center md:pl-0  bg-red-400">
                 <h1 className="text-4xl font-bold text-white">TicTacToe</h1>
                 <div className="absolute right-8">
                     {

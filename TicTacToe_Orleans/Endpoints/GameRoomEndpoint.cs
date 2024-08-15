@@ -69,6 +69,10 @@ namespace TicTacToe_Orleans.Endpoints
                     db.Invitations.Add(invitation);
 
                 }
+                else
+                {
+                    gameRoom.O = "Computer";
+                }
                 db.GameRooms.Add(gameRoom);
                 await db.SaveChangesAsync();
                 if (invitation is not null)

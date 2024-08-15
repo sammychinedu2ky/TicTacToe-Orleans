@@ -22,6 +22,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+        <div className="max-w-screen-xl m-auto">
       <SessionProvider session={session} refetchOnWindowFocus={false}>
         <Header />
         {children}
@@ -38,6 +39,7 @@ export default async function RootLayout({
                 pauseOnHover={false}
                 theme="light"
             />
+            </div>
         </body>
     </html>
   );

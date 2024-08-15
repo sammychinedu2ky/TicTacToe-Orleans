@@ -13,6 +13,7 @@ namespace TicTacToe_Orleans.Grains
         private readonly IHubContext<GameRoomHub, IGameRoomClient> _hubContext;
         private readonly IGrainFactory? _grainFactory;
         private IGrainContext _grainContext;
+
         private Guid _grainId;
 
         private GameRoomType? _gameRoomType { get; set; }
@@ -57,11 +58,11 @@ namespace TicTacToe_Orleans.Grains
                 {
                     await _hubContext.Groups.AddToGroupAsync(connectionId, _grainId.ToString());
                     await connectionGrain.AddUserAsync(userId, connectionId);
-                    
+
                     try
                     {
 
-                    await _hubContext.Clients.Client(connectionId).ReceiveGameState(State);
+                        await _hubContext.Clients.Client(connectionId).ReceiveGameState(State);
                     }
                     catch (Exception e)
                     {
@@ -71,7 +72,7 @@ namespace TicTacToe_Orleans.Grains
                 else
                 {
 
-                    await _hubContext.Clients.Client(connectionId).ReceiveError( "Can't join more than one room");
+                    await _hubContext.Clients.Client(connectionId).ReceiveError("Can't join more than one room");
                     return;
                 }
             }
@@ -92,13 +93,13 @@ namespace TicTacToe_Orleans.Grains
             {
                 State.Turn = "x";
             }
-           
+
         }
 
         public async Task SendGameState(GameRoomState gameRoomState)
         {
             var player = gameRoomState.Turn;
-            if (IsDraw(gameRoomState))
+            if (IsDraw(gameRoomState.Board))
             {
                 gameRoomState.Winner = "Draw";
                 gameRoomState.Draw++;
@@ -107,9 +108,9 @@ namespace TicTacToe_Orleans.Grains
                 await _hubContext.Clients.Group(_grainId.ToString()).ReceiveGameState(gameRoomState);
                 return;
             }
-            if (HasWon(gameRoomState))
+            if (HasWon(gameRoomState.Board))
             {
-               
+
                 var winnersName = player == "x" ? gameRoomState.X : gameRoomState.O;
                 gameRoomState.Winner = winnersName;
                 if (player == "x")
@@ -125,7 +126,7 @@ namespace TicTacToe_Orleans.Grains
                 await _hubContext.Clients.Group(_grainId.ToString()).ReceiveGameState(gameRoomState);
                 return;
             }
-            if (player ==  "x")
+            if (player == "x")
             {
                 gameRoomState.Turn = "o";
             }
@@ -133,14 +134,20 @@ namespace TicTacToe_Orleans.Grains
             {
                 gameRoomState.Turn = "x";
             }
-           
+
             State = gameRoomState;
-           await  _hubContext.Clients.Group(_grainId.ToString()).ReceiveGameState(gameRoomState);
+            await _hubContext.Clients.Group(_grainId.ToString()).ReceiveGameState(gameRoomState);
+            if (_gameRoomType == GameRoomType.Computer && gameRoomState.Turn == "o")
+            {
+                var move = MiniMax(State);
+                State.Board[move.i][move.j] = "o";
+                await Task.Delay(1000);
+                await SendGameState(State);
+            }
         }
 
-        private bool HasWon(GameRoomState gameRoomState)
+        private bool HasWon(List<List<string>> board)
         {
-            var board = gameRoomState.Board;
             // horizontal
             for (var i = 0; i < board.Count; i++)
             {
@@ -162,16 +169,15 @@ namespace TicTacToe_Orleans.Grains
             {
                 return true;
             }
-            if (board[0][2] != string.Empty && board[0][2] == board[1][1] && board[1][1] == board[2][0])
+            if (board[0][2] != String.Empty && board[0][2] == board[1][1] && board[1][1] == board[2][0])
             {
                 return true;
             }
             return false;
         }
 
-        private bool IsDraw(GameRoomState gameRoomState)
+        private bool IsDraw(List<List<string>> board)
         {
-            var board = gameRoomState.Board;
             for (var i = 0; i < board.Count; i++)
             {
                 for (var j = 0; j < board[i].Count; j++)
@@ -203,18 +209,100 @@ namespace TicTacToe_Orleans.Grains
 
         public async Task PlayAgain()
         {
-            List<List<string>> board =  new()
+            List<List<string>> board = new()
         {
             new List<string> { "", "", "" },
             new List<string> { "", "", "" },
             new List<string> { "", "", "" }
         };
-        State.Board = board;
+            State.Board = board;
             State.Turn = "x";
             State.Winner = "";
-            
+
             await _hubContext.Clients.Group(_grainId.ToString()).ReceiveGameState(State);
         }
+
+        private (int i, int j) MiniMax(GameRoomState state)
+        {
+            var bestScore = int.MinValue;
+            var move = (0, 0);
+            for (int m = 0; m < state.Board.Count; m++)
+            {
+                for (int n = 0; n < state.Board.Count; n++)
+                {
+                    if (state.Board[m][n] == String.Empty)
+                    {
+
+                        state.Board[m][n] = "o";
+                        var score = ComputerPlay(state.Board, 0).Score;
+                        state.Board[m][n] = String.Empty;
+                        if (score > bestScore)
+                        {
+                            bestScore = score;
+                            move = (m, n);
+                        }
+
+
+                    }
+                }
+
+            }
+            return move;
+        }
+        private (int Score, int depth) ComputerPlay(List<List<string>> board, int depth, string player = "x")
+        {
+            if (HasWon(board))
+            {
+                return (1, depth);
+            }
+            if (IsDraw(board))
+            {
+                return (0, depth);
+            }
+            var bestScore = int.MaxValue;
+            for (int i = 0; i < board.Count; i++)
+            {
+                for (int j = 0; j < board.Count; j++)
+                {
+                    if (board[i][j] == String.Empty)
+                    {
+
+                        board[i][j] = player;
+                        var score = VirtualUserPlay(board, depth + 1).Score;
+                        board[i][j] = String.Empty;
+                        bestScore = Math.Min(score, bestScore);
+                    }
+                }
+            }
+            return (bestScore, depth);
+        }
+        private (int Score, int Depth) VirtualUserPlay(List<List<string>> board, int depth, string player = "o")
+        {
+            if (HasWon(board))
+            {
+                return (-1, depth);
+            }
+            if (IsDraw(board))
+            {
+                return (0, depth);
+            }
+            var bestScore = int.MinValue;
+            for (int i = 0; i < board.Count; i++)
+            {
+                for (int j = 0; j < board.Count; j++)
+                {
+                    if (board[i][j] == String.Empty)
+                    {
+                        board[i][j] = player;
+                        var score =  ComputerPlay(board, depth + 1).Score;
+                        board[i][j] = String.Empty;
+                        bestScore = Math.Max(score, bestScore);
+                    }
+                }
+            }
+            return (bestScore, depth);
+        }
+
 
         public void Dispose()
         {

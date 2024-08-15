@@ -104,7 +104,9 @@ export default function Page({ params }: { params: { gameId: string } }) {
         let newBoard: GameRoomDTO = { ...gameState }
         newBoard.board[row][col] = gameState["turn"]
         console.log('newboarddddd', newBoard)
-        connection?.invoke("SendGameState", gameId, newBoard)
+        
+        if(connection?.state === "Connected") connection?.invoke("SendGameState", gameId, newBoard)
+        else notify("Yet to connect to server")
     }
     function userFromTurn() {
 

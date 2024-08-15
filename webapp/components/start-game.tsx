@@ -34,9 +34,9 @@ export default function StartGame() {
 
     return (
         <>
-            <div className="md:flex  min-h-[80vh] items-center border-4 border-green-700">
+            <div className="md:flex  h-[100vh] items-center border-4 border-red-400">
                 <div className="basis-full  flex flex-wrap">
-                    <div className="basis-full  md:basis-8/12  text-center  border-4 border-red-700">
+                    <div className="basis-full  md:basis-8/12  text-center  ">
                         <form action={formAction}>
                             <h3 className="text-5xl font-bold text-red-400 mt-3">Play Against
                                 <span className="ml-2 leading-loose ">
@@ -63,7 +63,7 @@ export default function StartGame() {
                             </div>
                         </form>
                     </div>
-                    <div className=" basis-full border-4 border-red-600 md:basis-4/12">
+                    <div className=" basis-full  md:basis-4/12">
                         <SignalRProvider>
                             <Invitation />
                         </SignalRProvider>

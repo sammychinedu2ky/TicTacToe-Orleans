@@ -13,7 +13,7 @@ namespace TicTacToe_Orleans_.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("20240805162200_changed-gameroom-model")]
-    partial class changedgameroommodel
+    partial class Changedgameroommodel
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

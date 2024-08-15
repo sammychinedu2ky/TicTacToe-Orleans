@@ -5,7 +5,7 @@
 namespace TicTacToe_Orleans_.Migrations
 {
     /// <inheritdoc />
-    public partial class changedgameroommodel : Migration
+    public partial class Changedgameroommodel : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

@@ -10,86 +10,85 @@ namespace TicTacToe_Orleans.Endpoints
 {
     public static class GameRoomEndpoints
     {
+        public class GameRoomEndpoint { }
         public static void MapGameRoomEndpoints(this IEndpointRouteBuilder routes)
         {
             var group = routes.MapGroup("/api/game-room");
 
-            group.MapGet("/", async (ApplicationDbContext db) =>
-            {
-                return await db.GameRooms.ToListAsync();
-            })
-            .WithName("GetAllGameRooms");
 
-            group.MapGet("/{id}", async Task<Results<Ok<GameRoom>, NotFound>> (Guid id, ApplicationDbContext db) =>
+            group.MapGet("/{id}", async Task<Results<Ok<GameRoom>, NotFound, ProblemHttpResult>> (Guid id, ApplicationDbContext db, ILogger<GameRoomEndpoint> logger) =>
             {
-                return await db.GameRooms.AsNoTracking()
-                    .FirstOrDefaultAsync(model => model.Id == id)
-                    is GameRoom model
-                        ? TypedResults.Ok(model)
-                        : TypedResults.NotFound();
-            })
-            .WithName("GetGameRoomById");
-
-            group.MapPut("/{id}", async Task<Results<Ok, NotFound>> (Guid id, GameRoom gamePlay, ApplicationDbContext db) =>
-            {
-                var affected = await db.GameRooms
-                    .Where(model => model.Id == id)
-                    .ExecuteUpdateAsync(setters => setters
-                      .SetProperty(m => m.Id, gamePlay.Id)
-                      .SetProperty(m => m.X, gamePlay.X)
-                      .SetProperty(m => m.O, gamePlay.O)
-                      .SetProperty(m => m.Type, gamePlay.Type)
-                      );
-                return affected == 1 ? TypedResults.Ok() : TypedResults.NotFound();
-            })
-            .WithName("UpdateGameRoom");
-
-            group.MapPost("/", async (GameRoomDto gameRoomDto, ApplicationDbContext db, IHubContext<GameRoomHub, IGameRoomClient> hubContext, HttpContext context) =>
-            {
-                var identity = context?.User?.Identity as ClaimsIdentity;
-                var user = identity?.FindFirst(ClaimTypes.Email)?.Value;
-                var gameRoom = new GameRoom
+                try
                 {
-                    Id = gameRoomDto.Id,
-                    Type = gameRoomDto.Type,
-                    X = user,
-                    O = gameRoomDto.Email
-                };
-                Invitation? invitation = null;
-                if (!String.IsNullOrEmpty(gameRoomDto.Email))
+                    return await db.GameRooms.AsNoTracking()
+                        .FirstOrDefaultAsync(model => model.Id == id)
+                        is GameRoom model
+                            ? TypedResults.Ok(model)
+                            : TypedResults.NotFound();
+
+                }
+                catch (Exception ex)
                 {
-                    invitation = new Invitation
+                    logger.LogError(ex.Message);
+                    return TypedResults.Problem("An error occurred while processing your request.");
+
+                }
+            }).RequireAuthorization(CookieHandlerRequirement.Policy);
+
+
+
+            group.MapPost("/", async Task<Results<Created<GameRoom>, ProblemHttpResult>> (GameRoomDto gameRoomDto,
+                ApplicationDbContext db,
+                IHubContext<GameRoomHub, IGameRoomClient> hubContext,
+                HttpContext context,
+                ILogger<GameRoomEndpoint> logger) =>
+            {
+                try
+                {
+                    var identity = context.User.Identity as ClaimsIdentity;
+                    var user = identity!.FindFirst(ClaimTypes.Email)!.Value!;
+                    var gameRoom = new GameRoom
                     {
-                        Id = gameRoom.Id,
-                        From = user!,
-                        To = gameRoomDto.Email,
-                        GameRoom = gameRoom.Id,
-                        NewInvite = true
+                        Id = gameRoomDto.Id,
+                        Type = gameRoomDto.Type,
+                        X = user,
+                        O = gameRoomDto.Email
                     };
-                    db.Invitations.Add(invitation);
+                    Invitation? invitation = null;
+                    if (!String.IsNullOrEmpty(gameRoomDto.Email))
+                    {
+                        invitation = new Invitation
+                        {
+                            Id = gameRoom.Id,
+                            From = user!,
+                            To = gameRoomDto.Email,
+                            GameRoom = gameRoom.Id,
+                            NewInvite = true
+                        };
+                        db.Invitations.Add(invitation);
+
+                    }
+                    else
+                    {
+                        gameRoom.O = "Computer";
+                    }
+                    db.GameRooms.Add(gameRoom);
+                    await db.SaveChangesAsync();
+                    if (invitation is not null)
+                    {
+                        await hubContext.Clients.Group(gameRoomDto.Email).ReceiveInvite(invitation.ToDTO());
+                    }
+                    return TypedResults.Created($"/api/GamePlay/{gameRoom.Id}", gameRoom);
 
                 }
-                else
+                catch (Exception ex)
                 {
-                    gameRoom.O = "Computer";
+                    logger.LogError(ex.Message);
+                    return TypedResults.Problem("An error occurred while processing your request.");
                 }
-                db.GameRooms.Add(gameRoom);
-                await db.SaveChangesAsync();
-                if (invitation is not null)
-                {
-                    await hubContext.Clients.Group(gameRoomDto.Email).ReceiveInvite(invitation.ToDTO());
-                }
-                return TypedResults.Created($"/api/GamePlay/{gameRoom.Id}", gameRoom);
             })
-            .WithName("CreateGameRoom").RequireAuthorization(CookieHandlerRequirement.Policy);
-            group.MapDelete("/{id}", async Task<Results<Ok, NotFound>> (Guid id, ApplicationDbContext db) =>
-            {
-                var affected = await db.GameRooms
-                    .Where(model => model.Id == id)
-                    .ExecuteDeleteAsync();
-                return affected == 1 ? TypedResults.Ok() : TypedResults.NotFound();
-            })
-            .WithName("DeleteGamePlay");
+            .RequireAuthorization(CookieHandlerRequirement.Policy);
+
         }
 
     }
@@ -98,6 +97,6 @@ namespace TicTacToe_Orleans.Endpoints
     {
         public Guid Id { get; set; }
         public GameRoomType Type { get; set; }
-        public string Email { get; set; }
+        public string Email { get; set; } = default!;
     }
 }

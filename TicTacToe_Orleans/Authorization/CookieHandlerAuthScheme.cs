@@ -14,7 +14,7 @@ namespace TicTacToe_Orleans.Authorization
     {
         private readonly IOptionsMonitor<CookieHandlerAuthOptions> _options;
 
-        public CookieHandlerAuthScheme(IOptionsMonitor<CookieHandlerAuthOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock) : base(options, logger, encoder, clock)
+        public CookieHandlerAuthScheme(IOptionsMonitor<CookieHandlerAuthOptions> options, ILoggerFactory logger, UrlEncoder encoder) : base(options, logger, encoder)
         {
             _options = options;
         }

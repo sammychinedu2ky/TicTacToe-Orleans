@@ -196,8 +196,8 @@ namespace TicTacToe_Orleans.Grains
             using (var dbContext = _dbContextFactory.CreateDbContext())
             {
                 var gameRoom = await dbContext.GameRooms.FindAsync(_grainId);
-                gameRoom.X = State.X;
-                gameRoom.O = State.O;
+                gameRoom!.X = State.X!;
+                gameRoom.O = State.O!;
                 gameRoom.XWins = State.XWins;
                 gameRoom.OWins = State.OWins;
                 gameRoom.Draw = State.Draw;

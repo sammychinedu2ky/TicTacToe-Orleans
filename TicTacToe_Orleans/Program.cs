@@ -18,6 +18,8 @@ using Microsoft.AspNetCore.Http.Json;
 using System.Text.Json;
 var builder = WebApplication.CreateBuilder(args);
 
+builder.AddServiceDefaults();
+
 IdentityModelEventSource.ShowPII = true;
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("ApplicationDbContext") ?? throw new InvalidOperationException("Connection string 'ApplicationDbContext' not found."),
@@ -89,6 +91,8 @@ builder.Host.UseOrleans(siloBuilder =>
 });
 builder.Services.AddSignalR();
 var app = builder.Build();
+
+app.MapDefaultEndpoints();
 
 app.UseCors();
 

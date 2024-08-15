@@ -135,7 +135,7 @@ export default function Page({ params }: { params: { gameId: string } }) {
                         {flatBoard.map((cell, index) => <div className="border text-center flex items-center justify-center border-red-400 " key={index} onClick={() => handleBoardClick(index, cell)}>{cell.toUpperCase()}</div>)}
                     </div>
                 </>}
-            <div className={clsx(" fixed flex top-0 items-start mt-20 justify-center h-[100vh]   w-full  ",
+            <div className={clsx(" fixed flex top-0 items-start mt-20 justify-center h-[100vh]  w-full max-w-screen-xl m-auto ",
                 { 'hidden': !modalOpen })
             } onClick={closeModal}>
                 <div className="w-4/12 p-4 bg-red-400 rounded-md " onClick={(event) => event.stopPropagation()}>

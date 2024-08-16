@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Polly;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -21,9 +19,9 @@ namespace TicTacToe_Orleans.Authorization
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            if(Context!.Request.Method == HttpMethod.Options.ToString())
+            if (Context!.Request.Method == HttpMethod.Options.ToString())
             {
-                return  AuthenticateResult.NoResult();
+                return AuthenticateResult.NoResult();
             }
             if (Context!.Request.Cookies.TryGetValue("authToken", out var jwtToken))
             {

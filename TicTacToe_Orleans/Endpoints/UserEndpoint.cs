@@ -1,8 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Http.HttpResults;
-using TicTacToe_Orleans.Model;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
 using TicTacToe_Orleans.Authorization;
-using System.Security.Claims;
+using TicTacToe_Orleans.Model;
 namespace TicTacToe_Orleans.Endpoints
 {
     public static class UserEndpoints
@@ -28,7 +27,7 @@ namespace TicTacToe_Orleans.Endpoints
 
                     return TypedResults.Created($"/api/User/{user.Id}", user);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     logger.LogError(ex.Message);
                     return TypedResults.Problem("An error occurred while processing your request.");
@@ -41,9 +40,9 @@ namespace TicTacToe_Orleans.Endpoints
             {
                 try
                 {
-                return TypedResults.Ok(await db.Users.ToListAsync());
+                    return TypedResults.Ok(await db.Users.ToListAsync());
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     logger.LogError(ex.Message);
                     return TypedResults.Problem("An error occurred while processing your request.");
@@ -56,16 +55,16 @@ namespace TicTacToe_Orleans.Endpoints
             {
                 try
                 {
-                return await db.Users.AsNoTracking()
-                    .FirstOrDefaultAsync(model => model.Id == id)
-                    is User model
-                        ? TypedResults.Ok(model)
-                        : TypedResults.NotFound();
+                    return await db.Users.AsNoTracking()
+                        .FirstOrDefaultAsync(model => model.Id == id)
+                        is User model
+                            ? TypedResults.Ok(model)
+                            : TypedResults.NotFound();
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     logger.LogError(ex.Message);
-                    return   TypedResults.Problem("An error occurred while processing your request.");
+                    return TypedResults.Problem("An error occurred while processing your request.");
                 }
             })
            .RequireAuthorization(CookieHandlerRequirement.Policy);

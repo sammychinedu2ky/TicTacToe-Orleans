@@ -6,9 +6,9 @@ namespace TicTacToe_Orleans.Hubs
     {
         Task ReceiveInvite(InvitationDTO invite);
         Task ReceiveGameState(GameRoomState gameRoomState);
-        Task ReceiveError( string message);
+        Task ReceiveError(string message);
         Task Connected();
     }
 
-  
+
 }

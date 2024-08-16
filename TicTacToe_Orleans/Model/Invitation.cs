@@ -1,7 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.OpenApi;
-using Microsoft.AspNetCore.Http.HttpResults;
-namespace TicTacToe_Orleans.Model
+﻿namespace TicTacToe_Orleans.Model
 {
     public class Invitation
     {
@@ -27,7 +24,7 @@ namespace TicTacToe_Orleans.Model
     {
         public static List<InvitationDTO> ToDTO(this List<Invitation> invitations)
         {
-            if(invitations is null || invitations.Count == 0)
+            if (invitations is null || invitations.Count == 0)
             {
                 return new List<InvitationDTO>();
             }

@@ -1,12 +1,10 @@
-﻿using TicTacToe_Orleans.Model;
-
-namespace TicTacToe_Orleans.Grains
+﻿namespace TicTacToe_Orleans.Grains
 {
     public class ConnectionGrain : IConnectionGrain
     {
         private Dictionary<string, string> _authenticatedUsers { get; set; } = [];
         private HashSet<string> _anonymousUsers { get; set; } = [];
-       
+
         public Task AddUserAsync(string? userId, string connectionId)
         {
             if (String.IsNullOrEmpty(userId))

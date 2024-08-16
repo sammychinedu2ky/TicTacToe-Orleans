@@ -1,11 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Http.HttpResults;
-using TicTacToe_Orleans.Model;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.SignalR;
-using TicTacToe_Orleans.Hubs;
-using TicTacToe_Orleans.Authorization;
-using Polly;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using TicTacToe_Orleans.Authorization;
+using TicTacToe_Orleans.Hubs;
+using TicTacToe_Orleans.Model;
 namespace TicTacToe_Orleans.Endpoints
 {
     public static class GameRoomEndpoints

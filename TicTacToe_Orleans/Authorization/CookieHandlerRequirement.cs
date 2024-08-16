@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using TicTacToe_Orleans.Authorization;
 
 namespace TicTacToe_Orleans.Authorization
 {

@@ -18,7 +18,7 @@
         [Id(6)]
         public int Draw { get; set; }
         [Id(7)]
-        public List<List<string>> Board { get; set; } = new ()
+        public List<List<string>> Board { get; set; } = new()
         {
             new List<string> { "", "", "" },
             new List<string> { "", "", "" },

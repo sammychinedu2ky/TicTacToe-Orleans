@@ -1,21 +1,10 @@
-using Microsoft.EntityFrameworkCore;
-using TicTacToe_Orleans.Endpoints;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using TicTacToe_Orleans.Authorization;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.IdentityModel.Logging;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using System.IdentityModel.Tokens.Jwt;
-using TicTacToe_Orleans.Hubs;
-using Orleans.Runtime;
-using Microsoft.AspNetCore.Cors.Infrastructure;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http.Json;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
+using TicTacToe_Orleans.Authorization;
+using TicTacToe_Orleans.Endpoints;
+using TicTacToe_Orleans.Hubs;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();

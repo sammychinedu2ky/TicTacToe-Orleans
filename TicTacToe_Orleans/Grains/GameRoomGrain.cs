@@ -94,7 +94,7 @@ namespace TicTacToe_Orleans.Grains
                 _logger.LogError(ex.Message);
                 await _hubContext.Clients.Client(connectionId).ReceiveError("An error occured joining the room");
             }
-           
+
         }
         public void AssignTurn()
         {
@@ -165,7 +165,7 @@ namespace TicTacToe_Orleans.Grains
                 _logger.LogError(ex.Message);
                 await _hubContext.Clients.Group(_grainId.ToString()).ReceiveError("An error occured updating game state");
             }
-           
+
         }
 
         private bool HasWon(List<List<string>> board)
@@ -235,7 +235,7 @@ namespace TicTacToe_Orleans.Grains
                 _logger.LogError(ex.Message);
                 await _hubContext.Clients.Group(_grainId.ToString()).ReceiveError("An error occured updating game state");
             }
-          
+
         }
 
         public async Task PlayAgain()
@@ -275,8 +275,6 @@ namespace TicTacToe_Orleans.Grains
                             bestScore = score;
                             move = (m, n);
                         }
-
-
                     }
                 }
 
@@ -329,7 +327,7 @@ namespace TicTacToe_Orleans.Grains
                     if (board[i][j] == String.Empty)
                     {
                         board[i][j] = player;
-                        var score =  ComputerPlay(board, depth + 1).Score;
+                        var score = ComputerPlay(board, depth + 1).Score;
                         board[i][j] = String.Empty;
                         bestScore = Math.Max(score, bestScore);
                     }

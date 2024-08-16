@@ -1,11 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Http.HttpResults;
-using TicTacToe_Orleans.Model;
-using Polly;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using System.Security.Principal;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using TicTacToe_Orleans.Authorization;
+using TicTacToe_Orleans.Model;
 namespace TicTacToe_Orleans.Endpoints
 {
     public static class InvitationEndpoints
@@ -26,7 +23,7 @@ namespace TicTacToe_Orleans.Endpoints
                     return TypedResults.Ok(invites.ToDTO());
 
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     logger.LogError(ex.Message);
                     return TypedResults.Problem("An error occurred while processing your request.");
@@ -49,7 +46,7 @@ namespace TicTacToe_Orleans.Endpoints
                     return TypedResults.Ok();
 
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     logger.LogError(ex.Message);
                     return TypedResults.Problem("An error occurred while processing your request.");
@@ -71,7 +68,7 @@ namespace TicTacToe_Orleans.Endpoints
                     return TypedResults.Ok();
 
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     logger.LogError(ex.Message);
                     return TypedResults.Problem("An error occurred while processing your request.");
@@ -88,7 +85,7 @@ namespace TicTacToe_Orleans.Endpoints
                             : TypedResults.NotFound();
 
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     logger.LogError(ex.Message);
                     return TypedResults.Problem("An error occurred while processing your request.");

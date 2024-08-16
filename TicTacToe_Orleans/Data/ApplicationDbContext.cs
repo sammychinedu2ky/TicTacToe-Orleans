@@ -1,6 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using System.Text.Json;
 using TicTacToe_Orleans.Model;
 
 public class ApplicationDbContext : DbContext

@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using Polly;
 using System.Security.Claims;
 using TicTacToe_Orleans.Grains;
 
@@ -36,7 +35,7 @@ namespace TicTacToe_Orleans.Hubs
         public async Task SendGameState(Guid roomId, GameRoomState gameRoomState)
         {
             var gameRoomGrain = _grainFactory.GetGrain<IGameRoomGrain>(roomId);
-            await gameRoomGrain.SendGameState( gameRoomState);
+            await gameRoomGrain.SendGameState(gameRoomState);
         }
         public async Task PlayAgain(Guid roomId)
         {
@@ -56,7 +55,7 @@ namespace TicTacToe_Orleans.Hubs
 
             await base.OnConnectedAsync();
             await Clients.Caller.Connected();
-            
+
         }
         public override async Task OnDisconnectedAsync(Exception? exception)
         {

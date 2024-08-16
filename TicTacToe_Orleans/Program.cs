@@ -20,7 +20,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
-IdentityModelEventSource.ShowPII = true;
+//IdentityModelEventSource.ShowPII = true;
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("ApplicationDbContext") ?? throw new InvalidOperationException("Connection string 'ApplicationDbContext' not found."),
     npgsqlOptionsAction: npgsqlOptions =>

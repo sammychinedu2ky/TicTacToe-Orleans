@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
 using System.Text.Json;
 using TicTacToe_Orleans.Authorization;
 using TicTacToe_Orleans.Endpoints;
@@ -8,37 +9,48 @@ using TicTacToe_Orleans.Hubs;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
+var secret = builder.Configuration["AUTH_SECRET"];
+var dbConnectionString = builder.Configuration.GetConnectionString("ApplicationDbContext");
+var client = builder.Configuration["CLIENT"];
+ArgumentNullException.ThrowIfNullOrEmpty(secret);
+ArgumentNullException.ThrowIfNullOrEmpty(dbConnectionString);
+ArgumentNullException.ThrowIfNullOrEmpty(client);
 
+builder.Host.UseOrleans(siloBuilder =>
+{
+    siloBuilder.UseLocalhostClustering();
+    siloBuilder.AddMemoryGrainStorage("urls");
+    siloBuilder.Services.AddDbContextFactory<ApplicationDbContext>((Action<DbContextOptionsBuilder>?)(options =>
+    options.UseNpgsql(dbConnectionString,
+    npgsqlOptionsAction: handleDbRetry()
+    )));
+});
 //IdentityModelEventSource.ShowPII = true;
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("ApplicationDbContext") ?? throw new InvalidOperationException("Connection string 'ApplicationDbContext' not found."),
-    npgsqlOptionsAction: npgsqlOptions =>
-    {
-        npgsqlOptions.EnableRetryOnFailure(maxRetryCount: 5, maxRetryDelay: TimeSpan.FromSeconds(30), null);
-    }
-    ));
-Console.WriteLine(builder.Configuration["AUTH_SECRET"]!);
+//builder.Services.AddDbContext<ApplicationDbContext>(options =>
+//    options.UseNpgsql(dbConnectionString,
+//    npgsqlOptionsAction: handleDbRetry()
+//    ));
+
 builder.Services.Configure<CookieHandlerAuthOptions>(options =>
 {
 
-    options.Secret = builder.Configuration["AUTH_SECRET"]!;
+    options.Secret = secret;
 });
 builder.Services.AddAuthentication()
-    .AddScheme<CookieHandlerAuthOptions, CookieHandlerAuthScheme>(CookieHandlerAuthOptions.Scheme, null)
-    ;
+    .AddScheme<CookieHandlerAuthOptions, CookieHandlerAuthScheme>(CookieHandlerAuthOptions.Scheme, null);
 
 builder.Services.AddSingleton<IAuthorizationHandler, CookieHandler>();
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy(AuthSecretRequirement.Policy, r =>
     {
-        r.AddRequirements(new AuthSecretRequirement(builder.Configuration["AUTH_SECRET"]!));
+        r.AddRequirements(new AuthSecretRequirement(secret));
     });
 
     options.AddPolicy(CookieHandlerRequirement.Policy, r =>
     {
+        r.AddRequirements(new CookieHandlerRequirement(secret));
         // r.RequireAuthenticatedUser();
-        r.AddRequirements(new CookieHandlerRequirement(builder.Configuration["AUTH_SECRET"]!));
         // r.AddAuthenticationSchemes(CookieHandlerAuthOptions.Scheme);
 
 
@@ -52,7 +64,7 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policyBuilder =>
     {
-        policyBuilder.WithOrigins(builder.Configuration["CLIENT"]!)
+        policyBuilder.WithOrigins(client)
             .AllowAnyMethod()
             .AllowCredentials()
             .AllowAnyHeader();
@@ -60,24 +72,6 @@ builder.Services.AddCors(options =>
 });
 builder.Services.AddSingleton<IAuthorizationHandler, AuthSecretHandler>();
 builder.Services.AddHttpContextAccessor();
-builder.Host.UseOrleans(siloBuilder =>
-{
-    siloBuilder.Services.Configure<JsonOptions>(options =>
-{
-    options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-});
-    siloBuilder.UseLocalhostClustering();
-    siloBuilder.AddMemoryGrainStorage("urls");
-    //siloBuilder.Services.AddDbContextFactory<ApplicationDbContext>();
-    siloBuilder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("ApplicationDbContext") ?? throw new InvalidOperationException("Connection string 'ApplicationDbContext' not found."),
-    npgsqlOptionsAction: npgsqlOptions =>
-    {
-        npgsqlOptions.EnableRetryOnFailure(maxRetryCount: 5, maxRetryDelay: TimeSpan.FromSeconds(30), null);
-    }
-    ), ServiceLifetime.Scoped);
-
-});
 builder.Services.AddSignalR();
 var app = builder.Build();
 
@@ -93,4 +87,10 @@ app.MapGameRoomEndpoints();
 app.MapHub<GameRoomHub>("/gameRoomHub");
 app.Run();
 
-
+static Action<NpgsqlDbContextOptionsBuilder> handleDbRetry()
+{
+    return npgsqlOptions =>
+    {
+        npgsqlOptions.EnableRetryOnFailure(maxRetryCount: 5, maxRetryDelay: TimeSpan.FromSeconds(30), null);
+    };
+}

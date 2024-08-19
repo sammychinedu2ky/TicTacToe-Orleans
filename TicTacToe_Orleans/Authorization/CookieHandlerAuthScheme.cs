@@ -19,11 +19,12 @@ namespace TicTacToe_Orleans.Authorization
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            if (Context!.Request.Method == HttpMethod.Options.ToString())
+            ArgumentNullException.ThrowIfNull(Context);
+            if (Context.Request.Method == HttpMethod.Options.ToString())
             {
                 return AuthenticateResult.NoResult();
             }
-            if (Context!.Request.Cookies.TryGetValue("authToken", out var jwtToken))
+            if (Context.Request.Cookies.TryGetValue("authToken", out var jwtToken))
             {
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var validationParameters = new TokenValidationParameters
@@ -39,7 +40,8 @@ namespace TicTacToe_Orleans.Authorization
                 {
 
                     var principal = await tokenHandler.ValidateTokenAsync(jwtToken, validationParameters);
-                    var identity = (ClaimsIdentity)principal.ClaimsIdentity!;
+                    ArgumentNullException.ThrowIfNull(principal.ClaimsIdentity);
+                    var identity = (ClaimsIdentity)principal.ClaimsIdentity;
                     var claims = new List<Claim>(identity.Claims);
 
                     var newIdentity = new ClaimsIdentity(claims, "JWT");

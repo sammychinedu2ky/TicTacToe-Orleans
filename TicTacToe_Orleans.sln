@@ -5,9 +5,11 @@ VisualStudioVersion = 17.10.35013.160
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TicTacToe_Orleans", "TicTacToe_Orleans\TicTacToe_Orleans.csproj", "{19DA13D2-8366-453C-BB77-9096D639D5AF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TicTacToe_Orleans.AppHost", "TicTacToe_Orleans.AppHost\TicTacToe_Orleans.AppHost.csproj", "{F276B99D-5C45-4743-9AD9-D14CEF1CBA5C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TicTacToe_Orleans.AppHost", "TicTacToe_Orleans.AppHost\TicTacToe_Orleans.AppHost.csproj", "{F276B99D-5C45-4743-9AD9-D14CEF1CBA5C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TicTacToe_Orleans.ServiceDefaults", "TicTacToe_Orleans.ServiceDefaults\TicTacToe_Orleans.ServiceDefaults.csproj", "{650F69FB-EE65-464A-9EB2-DD0F50555EC4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataBaseMigrator", "DataBaseMigrator\DataBaseMigrator.csproj", "{E9995A06-3213-4116-9F01-DB48807217AC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +57,18 @@ Global
 		{650F69FB-EE65-464A-9EB2-DD0F50555EC4}.Release|x64.Build.0 = Release|Any CPU
 		{650F69FB-EE65-464A-9EB2-DD0F50555EC4}.Release|x86.ActiveCfg = Release|Any CPU
 		{650F69FB-EE65-464A-9EB2-DD0F50555EC4}.Release|x86.Build.0 = Release|Any CPU
+		{E9995A06-3213-4116-9F01-DB48807217AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9995A06-3213-4116-9F01-DB48807217AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9995A06-3213-4116-9F01-DB48807217AC}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E9995A06-3213-4116-9F01-DB48807217AC}.Debug|x64.Build.0 = Debug|Any CPU
+		{E9995A06-3213-4116-9F01-DB48807217AC}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E9995A06-3213-4116-9F01-DB48807217AC}.Debug|x86.Build.0 = Debug|Any CPU
+		{E9995A06-3213-4116-9F01-DB48807217AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9995A06-3213-4116-9F01-DB48807217AC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E9995A06-3213-4116-9F01-DB48807217AC}.Release|x64.ActiveCfg = Release|Any CPU
+		{E9995A06-3213-4116-9F01-DB48807217AC}.Release|x64.Build.0 = Release|Any CPU
+		{E9995A06-3213-4116-9F01-DB48807217AC}.Release|x86.ActiveCfg = Release|Any CPU
+		{E9995A06-3213-4116-9F01-DB48807217AC}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

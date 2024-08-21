@@ -2,28 +2,60 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
+using Orleans.Configuration;
+using System.Net;
 using System.Text.Json;
 using TicTacToe_Orleans.Authorization;
 using TicTacToe_Orleans.Endpoints;
 using TicTacToe_Orleans.Hubs;
 var builder = WebApplication.CreateBuilder(args);
-
+builder.AddRedisClient("redis");
 builder.AddServiceDefaults();
 var secret = builder.Configuration["AUTH_SECRET"];
 var dbConnectionString = builder.Configuration.GetConnectionString("ApplicationDbContext");
 var client = builder.Configuration["CLIENT"];
+var dashBoardPort = builder.Configuration["ORLEANS-SILO-DASHBOARD"];
+var orleansPort = builder.Configuration["ORLEANS-SILO-PORT"];
+var gatewayPort = builder.Configuration["ORLEANS-GATEWAY-PORT"];
 ArgumentNullException.ThrowIfNullOrEmpty(secret);
 ArgumentNullException.ThrowIfNullOrEmpty(dbConnectionString);
 ArgumentNullException.ThrowIfNullOrEmpty(client);
-
+ArgumentNullException.ThrowIfNullOrEmpty(dashBoardPort);
+ArgumentNullException.ThrowIfNullOrEmpty(orleansPort);
+ArgumentNullException.ThrowIfNullOrEmpty(gatewayPort);
+int.TryParse(dashBoardPort, out var dashBoardPortInt);
+int.TryParse(orleansPort, out var orleansPortInt);
+int.TryParse(gatewayPort, out var gatewayPortInt);
 builder.Host.UseOrleans(siloBuilder =>
 {
-    siloBuilder.UseLocalhostClustering();
+  //  siloBuilder.UseLocalhostClustering();
+    //siloBuilder.UseRedisClustering("my-redis-directory", configuration: x =>
+    //{
+    //    x.
+    //});
     siloBuilder.AddMemoryGrainStorage("urls");
     siloBuilder.Services.AddDbContextFactory<ApplicationDbContext>((Action<DbContextOptionsBuilder>?)(options =>
     options.UseNpgsql(dbConnectionString,
     npgsqlOptionsAction: handleDbRetry()
     )));
+    //siloBuilder.ConfigureEndpoints(siloPort: orleansPortInt, gatewayPort: 3030);
+    siloBuilder.Configure<EndpointOptions>(options =>
+    {
+        // Port to use for silo-to-silo
+        options.AdvertisedIPAddress = IPAddress.Loopback;
+        options.SiloPort = orleansPortInt;
+        options.GatewayPort = gatewayPortInt;
+    });
+    siloBuilder.UseRedisClustering( configuration: o =>
+    {
+        o.ConnectionString = builder.Configuration.GetConnectionString("redis");
+        o.Database = 0;
+       
+    });
+    siloBuilder.UseDashboard(option =>
+    {
+        option.Port = dashBoardPortInt;
+    });
 });
 //IdentityModelEventSource.ShowPII = true;
 //builder.Services.AddDbContext<ApplicationDbContext>(options =>

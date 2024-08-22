@@ -9,29 +9,37 @@ using TicTacToe_Orleans.Authorization;
 using TicTacToe_Orleans.Endpoints;
 using TicTacToe_Orleans.Hubs;
 var builder = WebApplication.CreateBuilder(args);
-var secret = builder.Configuration["AUTH_SECRET"];
-var dbConnectionString = builder.Configuration.GetConnectionString("ApplicationDbContext");
-var client = builder.Configuration["CLIENT"];
-var dashBoardPort = builder.Configuration["ORLEANS-SILO-DASHBOARD"];
-var orleansPort = builder.Configuration["ORLEANS-SILO-PORT"];
+var secret = builder.Configuration["AUTH_SECRET"]!;
+var dbConnectionString = builder.Configuration.GetConnectionString("ApplicationDbContext")!;
+var postgresConnectionString = builder.Configuration.GetConnectionString("tictactoedb")!;
+var client = builder.Configuration["CLIENT"]!;
+var dashBoardPort = builder.Configuration["ORLEANS-SILO-DASHBOARD"]!;
+var orleansPort = builder.Configuration["ORLEANS-SILO-PORT"]!;
 var gatewayPort = builder.Configuration["ORLEANS-GATEWAY-PORT"];
-ArgumentNullException.ThrowIfNullOrEmpty(secret);
-ArgumentNullException.ThrowIfNullOrEmpty(dbConnectionString);
-ArgumentNullException.ThrowIfNullOrEmpty(client);
-ArgumentNullException.ThrowIfNullOrEmpty(dashBoardPort);
-ArgumentNullException.ThrowIfNullOrEmpty(orleansPort);
-ArgumentNullException.ThrowIfNullOrEmpty(gatewayPort);
+var redisConnectionString = builder.Configuration.GetConnectionString("redis")!;
+if (builder.Environment.IsEnvironment("Production"))
+{
+    ArgumentNullException.ThrowIfNullOrEmpty(postgresConnectionString);
+    ArgumentNullException.ThrowIfNullOrEmpty(secret);
+    //ArgumentNullException.ThrowIfNullOrEmpty(dbConnectionString);
+    ArgumentNullException.ThrowIfNullOrEmpty(client);
+    ArgumentNullException.ThrowIfNullOrEmpty(dashBoardPort);
+    ArgumentNullException.ThrowIfNullOrEmpty(orleansPort);
+    ArgumentNullException.ThrowIfNullOrEmpty(gatewayPort);
+    ArgumentNullException.ThrowIfNullOrEmpty(redisConnectionString);
+}
 int.TryParse(dashBoardPort, out var dashBoardPortInt);
 int.TryParse(orleansPort, out var orleansPortInt);
 int.TryParse(gatewayPort, out var gatewayPortInt);
-builder.AddRedisClient("redis");
+//builder.AddRedisClient("redis");
 builder.AddServiceDefaults();
 builder.Host.UseOrleans(siloBuilder =>
 {
 
     siloBuilder.AddMemoryGrainStorage("urls");
+    //siloBuilder.AddNpgsqlDbContext<ApplicationDbContext>("postgresdb");
     siloBuilder.Services.AddDbContextFactory<ApplicationDbContext>((Action<DbContextOptionsBuilder>?)(options =>
-    options.UseNpgsql(dbConnectionString,
+    options.UseNpgsql(postgresConnectionString,
     npgsqlOptionsAction: handleDbRetry()
     )));
     siloBuilder.Configure<EndpointOptions>(options =>
@@ -43,7 +51,7 @@ builder.Host.UseOrleans(siloBuilder =>
     });
     siloBuilder.UseRedisClustering( configuration: o =>
     {
-        o.ConnectionString = builder.Configuration.GetConnectionString("redis");
+        o.ConnectionString = redisConnectionString;
         o.Database = 0;
        
     });
@@ -99,7 +107,7 @@ builder.Services.AddCors(options =>
 });
 builder.Services.AddSingleton<IAuthorizationHandler, AuthSecretHandler>();
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddSignalR();
+builder.Services.AddSignalR().AddStackExchangeRedis(redisConnectionString);
 var app = builder.Build();
 
 app.MapDefaultEndpoints();

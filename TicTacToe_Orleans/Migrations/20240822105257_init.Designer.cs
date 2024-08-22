@@ -11,8 +11,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace TicTacToe_Orleans_.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240810125922_Changed-Model")]
-    partial class ChangedModel
+    [Migration("20240822105257_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DataBaseMigrator\DataBaseMigrator.csproj" />
     <ProjectReference Include="..\TicTacToe_Orleans\TicTacToe_Orleans.csproj" />
   </ItemGroup>
 

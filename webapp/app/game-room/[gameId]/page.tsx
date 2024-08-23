@@ -35,7 +35,7 @@ export default function Page({ params }: { params: { gameId: string } }) {
         notify("Invalid game id")
         return <div>Invalid game id</div>
     }
-    const { data, isLoading } = useSWR(`${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/game-room/${gameId}`, async (url: string) => {
+    const { data, isLoading } = useSWR(`/api/game-room/${gameId}`, async (url: string) => {
         try {
             const res = await fetcher(url)
             if (res.ok) {

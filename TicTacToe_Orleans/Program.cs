@@ -119,7 +119,7 @@ app.MapUserEndpoints();
 app.MapInviteEndpoints();
 
 app.MapGameRoomEndpoints();
-app.MapHub<GameRoomHub>("/gameRoomHub");
+app.MapHub<GameRoomHub>("api/gameRoomHub");
 app.Run();
 
 static Action<NpgsqlDbContextOptionsBuilder> handleDbRetry()

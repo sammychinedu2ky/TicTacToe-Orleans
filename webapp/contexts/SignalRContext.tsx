@@ -11,7 +11,7 @@ export const SignalRProvider = ({ children}:SignalRProviderProps) => {
 console.log(process.env.NEXT_PUBLIC_API_SERVER_URL)
   useEffect(() => {
     const newConnection = new signalR.HubConnectionBuilder()
-      .withUrl(`${process.env.NEXT_PUBLIC_API_SERVER_URL}/gameRoomHub`)
+      .withUrl(`api/gameRoomHub`)
       .withAutomaticReconnect()
       .build();
 

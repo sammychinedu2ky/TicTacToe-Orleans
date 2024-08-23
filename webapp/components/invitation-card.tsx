@@ -13,7 +13,7 @@ export default function InvitationCard({ invitation, mutate }: { invitation: Inv
    console.log(invitation)
     const notify = (errorMessage: string) => toast(errorMessage)
     const handleInvitation = async (accepted: boolean) => {
-        var url = `${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/Invitations`
+        var url = `/api/Invitations`
         if (accepted) {
             url += `/accept/${invitation.id}`
         }

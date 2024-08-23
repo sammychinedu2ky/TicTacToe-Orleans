@@ -32,7 +32,7 @@ export const authOptions = {
       if (token.newUser == undefined ) {
         // add to database
         try{
-        const req =  await fetch(`${process.env.API_SERVER_URL}/api/user`, {
+        const req =  await fetch(`/api/user`, {
             method: 'POST',
             headers: new Headers({
               'Content-Type': 'application/json',

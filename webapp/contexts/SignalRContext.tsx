@@ -11,7 +11,10 @@ export const SignalRProvider = ({ children}:SignalRProviderProps) => {
 console.log(process.env.NEXT_PUBLIC_API_SERVER_URL)
   useEffect(() => {
     const newConnection = new signalR.HubConnectionBuilder()
-      .withUrl(`${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/gameRoomHub`)
+      .withUrl(`/api/gameRoomHub`,{
+        skipNegotiation: true,
+        transport: signalR.HttpTransportType.WebSockets
+      })
       .withAutomaticReconnect()
       .build();
 

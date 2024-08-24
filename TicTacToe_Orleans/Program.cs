@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
 using Orleans.Configuration;
+using StackExchange.Redis;
 using System.Net;
 using System.Text.Json;
 using TicTacToe_Orleans.Authorization;
@@ -45,15 +46,15 @@ builder.Host.UseOrleans(siloBuilder =>
     siloBuilder.Configure<EndpointOptions>(options =>
     {
         // Port to use for silo-to-silo
-       // options.AdvertisedIPAddress = IPAddress.Loopback;
+        // options.AdvertisedIPAddress = IPAddress.Loopback;
         options.SiloPort = orleansPortInt;
-       // options.GatewayPort = gatewayPortInt;
+        // options.GatewayPort = gatewayPortInt;
     });
-    siloBuilder.UseRedisClustering( configuration: o =>
+    siloBuilder.UseRedisClustering(configuration: o =>
     {
         o.ConnectionString = redisConnectionString;
         o.Database = 0;
-       
+
     });
     siloBuilder.UseDashboard(option =>
     {
@@ -107,8 +108,13 @@ builder.Services.AddCors(options =>
 });
 builder.Services.AddSingleton<IAuthorizationHandler, AuthSecretHandler>();
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddSignalR().AddStackExchangeRedis(redisConnectionString);
+builder.Services.AddSignalR().AddStackExchangeRedis(redisConnectionString, options =>
+{
+    options.Configuration.ChannelPrefix = RedisChannel.Literal("MyApp");
+}
+ );
 var app = builder.Build();
+app.MapDefaultEndpoints();
 
 app.MapDefaultEndpoints();
 

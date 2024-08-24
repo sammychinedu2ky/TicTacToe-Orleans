@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
 using Orleans.Configuration;
+using StackExchange.Redis;
 using System.Net;
 using System.Text.Json;
 using TicTacToe_Orleans.Authorization;
@@ -111,7 +112,9 @@ builder.Services.AddCors(options =>
 });
 builder.Services.AddSingleton<IAuthorizationHandler, AuthSecretHandler>();
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddSignalR().AddStackExchangeRedis(redisConnectionString);
+builder.Services.AddSignalR().AddStackExchangeRedis(redisConnectionString, options => options.Configuration.ChannelPrefix = RedisChannel.Literal("MyApp"));
+
+
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
@@ -123,7 +126,7 @@ app.MapUserEndpoints();
 app.MapInviteEndpoints();
 
 app.MapGameRoomEndpoints();
-app.MapHub<GameRoomHub>("api/gameRoomHub");
+app.MapHub<GameRoomHub>("api/orleans/gameRoomHub");
 app.Run();
 
 static Action<NpgsqlDbContextOptionsBuilder> handleDbRetry()

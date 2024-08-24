@@ -12,7 +12,7 @@ namespace TicTacToe_Orleans.Endpoints
         public class GameRoomEndpoint { }
         public static void MapGameRoomEndpoints(this IEndpointRouteBuilder routes)
         {
-            var group = routes.MapGroup("/api/game-room");
+            var group = routes.MapGroup("/api/orleans/game-room");
 
 
             group.MapGet("/{id}", async Task<Results<Ok<GameRoom>, NotFound, ProblemHttpResult>> (Guid id, ApplicationDbContext db, ILogger<GameRoomEndpoint> logger) =>

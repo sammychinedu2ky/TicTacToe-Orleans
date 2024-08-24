@@ -84,11 +84,11 @@ async function myAction(router: AppRouterInstance, prevState: null | void, query
 
     if (opponent == "user" && email != null) {
         try {
-            let checkIfUserExists = await fetcher(`/api/user/${email}`)
+            let checkIfUserExists = await fetcher(`/api/orleans/user/${email}`)
             if (checkIfUserExists.ok) {
                 var gameRoom = uuid();
                 try {
-                    await postFetcher(`/api/game-room`,{ id: gameRoom, type: "User", email: email })
+                    await postFetcher(`/api/orleans/game-room`,{ id: gameRoom, type: "User", email: email })
                     // redirect to game room
                     router.push(`/game-room/${gameRoom}`)
                     return;
@@ -111,7 +111,7 @@ async function myAction(router: AppRouterInstance, prevState: null | void, query
     else {
         let gameRoom = uuid();
         try {
-            await postFetcher(`/api/game-room`, { id: gameRoom, type: "Computer" })
+            await postFetcher(`/api/orleans/game-room`, { id: gameRoom, type: "Computer" })
             // redirect to game room
             router.push(`/game-room/${gameRoom}`)
             return;

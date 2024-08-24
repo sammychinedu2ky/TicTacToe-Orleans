@@ -32,7 +32,7 @@ export const authOptions = {
       if (token.newUser == undefined ) {
         // add to database
         try{
-        const req =  await fetch(`/api/user`, {
+        const req =  await fetch(`${process.env.API_SERVER_URL}/api/orleans/user`, {
             method: 'POST',
             headers: new Headers({
               'Content-Type': 'application/json',
@@ -56,7 +56,10 @@ export const authOptions = {
     },
   },
   providers: [
-    Github
+    Github({
+      clientId: process.env.GITHUB_CLIENT_ID!,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET!
+    })
   ],
   session: {
     strategy: "jwt",

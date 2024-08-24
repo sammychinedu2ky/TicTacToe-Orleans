@@ -6,7 +6,8 @@ var builder = DistributedApplication.CreateBuilder(args);
 var db = builder.AddPostgres("postgresdb")
                 .AddDatabase("tictactoedb");
 var redis = builder.AddRedis("redis");
-
+var orleans = builder.AddOrleans("orleans-cluster")
+    .WithClustering(redis);
 
 builder.AddProject<Projects.DataBaseMigrator>("databasemigrator")
     .WithReference(db);
@@ -14,9 +15,8 @@ builder.AddProject<Projects.DataBaseMigrator>("databasemigrator")
 var backend = builder.AddProject<Projects.TicTacToe_Orleans>("tictactoe-orleans")
     .WithReference(redis)
     .WithReference(db)
+    .WithReference(orleans)
     .WithReplicas(3)
-    .WithEndpoint(name: "ORLEANS-SILO-PORT", port: 677, scheme: "http", env: "ORLEANS-SILO-PORT")
-    .WithEndpoint(name: "ORLEANS-GATEWAY-PORT", port: 877, scheme: "http", env: "ORLEANS-GATEWAY-PORT")
     .WithEndpoint(name: "ORLEANS-SILO-DASHBOARD", port: 977, scheme: "http", env: "ORLEANS-SILO-DASHBOARD");
    
 

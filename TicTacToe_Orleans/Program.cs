@@ -33,28 +33,32 @@ int.TryParse(orleansPort, out var orleansPortInt);
 int.TryParse(gatewayPort, out var gatewayPortInt);
 //builder.AddRedisClient("redis");
 builder.AddServiceDefaults();
-builder.Host.UseOrleans(siloBuilder =>
+builder.AddKeyedRedisClient("redis");
+builder.UseOrleans(siloBuilder =>
 {
 
-    siloBuilder.AddMemoryGrainStorage("urls");
-    //siloBuilder.AddNpgsqlDbContext<ApplicationDbContext>("postgresdb");
+   
     siloBuilder.Services.AddDbContextFactory<ApplicationDbContext>((Action<DbContextOptionsBuilder>?)(options =>
     options.UseNpgsql(postgresConnectionString,
     npgsqlOptionsAction: handleDbRetry()
     )));
-    siloBuilder.Configure<EndpointOptions>(options =>
+    //siloBuilder.Configure<EndpointOptions>(options =>
+    //{
+    //    // Port to use for silo-to-silo
+    //   // options.AdvertisedIPAddress = IPAddress.Loopback;
+    //    options.SiloPort = orleansPortInt;
+    //   // options.GatewayPort = gatewayPortInt;
+    //});
+    //siloBuilder.UseRedisClustering( configuration: o =>
+    //{
+    //    o.ConnectionString = redisConnectionString;
+    //    o.Database = 0;
+
+    //});
+    if (builder.Environment.IsDevelopment())
     {
-        // Port to use for silo-to-silo
-       // options.AdvertisedIPAddress = IPAddress.Loopback;
-        options.SiloPort = orleansPortInt;
-       // options.GatewayPort = gatewayPortInt;
-    });
-    siloBuilder.UseRedisClustering( configuration: o =>
-    {
-        o.ConnectionString = redisConnectionString;
-        o.Database = 0;
-       
-    });
+        siloBuilder.ConfigureEndpoints(Random.Shared.Next(10_000, 50_000), Random.Shared.Next(10_000, 50_000));
+    }
     siloBuilder.UseDashboard(option =>
     {
         option.Port = dashBoardPortInt;

@@ -9,7 +9,7 @@ namespace TicTacToe_Orleans.Endpoints
         public class UserEndpoint { }
         public static void MapUserEndpoints(this IEndpointRouteBuilder routes)
         {
-            var group = routes.MapGroup("/api/User");
+            var group = routes.MapGroup("/api/orleans/User");
 
             group.MapPost("/", async Task<Results<Created<User>, ProblemHttpResult>> (User user, ApplicationDbContext db, ILogger<UserEndpoint> logger) =>
             {
@@ -25,7 +25,7 @@ namespace TicTacToe_Orleans.Endpoints
                         await db.SaveChangesAsync();
                     }
 
-                    return TypedResults.Created($"/api/User/{user.Id}", user);
+                    return TypedResults.Created($"/api/orleans/User/{user.Id}", user);
                 }
                 catch (Exception ex)
                 {

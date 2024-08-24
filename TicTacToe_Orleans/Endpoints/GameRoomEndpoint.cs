@@ -12,7 +12,7 @@ namespace TicTacToe_Orleans.Endpoints
         public class GameRoomEndpoint { }
         public static void MapGameRoomEndpoints(this IEndpointRouteBuilder routes)
         {
-            var group = routes.MapGroup("/api/game-room");
+            var group = routes.MapGroup("/api/orleans/game-room");
 
 
             group.MapGet("/{id}", async Task<Results<Ok<GameRoom>, NotFound, ProblemHttpResult>> (Guid id, ApplicationDbContext db, ILogger<GameRoomEndpoint> logger) =>
@@ -77,7 +77,7 @@ namespace TicTacToe_Orleans.Endpoints
                     {
                         await hubContext.Clients.Group(gameRoomDto.Email).ReceiveInvite(invitation.ToDTO());
                     }
-                    return TypedResults.Created($"/api/GamePlay/{gameRoom.Id}", gameRoom);
+                    return TypedResults.Created($"/api/orleans/GamePlay/{gameRoom.Id}", gameRoom);
 
                 }
                 catch (Exception ex)

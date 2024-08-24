@@ -13,7 +13,7 @@ export default function Invitation() {
     let dum = dummy.slice(0, 10)
     const session = useSession()
     const connection = useSignalR()
-    const { data, error, isLoading, mutate } = useSWR(`/api/invitations/my-invites`, async (url) => {
+    const { data, error, isLoading, mutate } = useSWR(`/api/orleans/invitations/my-invites`, async (url) => {
         try {
             if(session.status == "authenticated"){
             const res = await fetcher(url)

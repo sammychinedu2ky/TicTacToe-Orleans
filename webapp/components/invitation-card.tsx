@@ -13,7 +13,7 @@ export default function InvitationCard({ invitation, mutate }: { invitation: Inv
    console.log(invitation)
     const notify = (errorMessage: string) => toast(errorMessage)
     const handleInvitation = async (accepted: boolean) => {
-        var url = `/api/Invitations`
+        var url = `/api/orleans/Invitations`
         if (accepted) {
             url += `/accept/${invitation.id}`
         }

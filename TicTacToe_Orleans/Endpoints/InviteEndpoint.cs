@@ -10,7 +10,7 @@ namespace TicTacToe_Orleans.Endpoints
         public class InvitationEndpoint { }
         public static void MapInviteEndpoints(this IEndpointRouteBuilder routes)
         {
-            var group = routes.MapGroup("/api/Invitations");
+            var group = routes.MapGroup("/api/orleans/Invitations");
 
 
             group.MapGet("/my-invites", async Task<Results<Ok<List<InvitationDTO>>, ProblemHttpResult>> (ApplicationDbContext db, HttpContext context, ILogger<InvitationEndpoint> logger) =>

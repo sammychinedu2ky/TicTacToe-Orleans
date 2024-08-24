@@ -1,10 +1,11 @@
-import Github from "next-auth/providers/github";
+import GitHubProvider from "next-auth/providers/github";
 import { SignJWT, jwtVerify, errors } from "jose"
 import type { NextAuthConfig } from "next-auth"
 import NextAuth from "next-auth";
 import { redirect } from "next/navigation";
 
 export const authOptions = {
+  debug: true,
   callbacks: {
     authorized({ request, auth }) {
       //console.log('authoriszed')
@@ -32,7 +33,7 @@ export const authOptions = {
       if (token.newUser == undefined ) {
         // add to database
         try{
-        const req =  await fetch(`/api/user`, {
+        const req =  await fetch(`${process.env.API_SERVER_URL}/api/orleans/user`, {
             method: 'POST',
             headers: new Headers({
               'Content-Type': 'application/json',
@@ -46,17 +47,20 @@ export const authOptions = {
         catch(e){
           console.log(e)
           // redirect to home page during error 
-          return redirect('/') 
+         // return redirect('/') 
         }
       
         console.log('new user')
         console.log(token)
       }
       return token
-    },
+    }
   },
   providers: [
-    Github
+    GitHubProvider({
+      clientId: process.env.GITHUB_CLIENT_ID,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET,
+    }),
   ],
   session: {
     strategy: "jwt",
@@ -89,6 +93,7 @@ export const authOptions = {
         return payload;
       } catch (error) {
         if (error instanceof errors.JWTExpired) {
+          console.log(token)
           throw new Error('Token has expired');
         }
         throw new Error(`Token claim invalid`);

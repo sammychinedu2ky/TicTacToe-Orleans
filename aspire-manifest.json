@@ -1,0 +1,179 @@
+{
+  "$schema": "https://json.schemastore.org/aspire-8.0.json",
+  "resources": {
+    "postgresdb": {
+      "type": "container.v0",
+      "connectionString": "Host={postgresdb.bindings.tcp.host};Port={postgresdb.bindings.tcp.port};Username=postgres;Password={postgresdb-password.value}",
+      "image": "docker.io/library/postgres:16.2",
+      "env": {
+        "POSTGRES_HOST_AUTH_METHOD": "scram-sha-256",
+        "POSTGRES_INITDB_ARGS": "--auth-host=scram-sha-256 --auth-local=scram-sha-256",
+        "POSTGRES_USER": "postgres",
+        "POSTGRES_PASSWORD": "{postgresdb-password.value}"
+      },
+      "bindings": {
+        "tcp": {
+          "scheme": "tcp",
+          "protocol": "tcp",
+          "transport": "tcp",
+          "targetPort": 5432
+        }
+      }
+    },
+    "tictactoedb": {
+      "type": "value.v0",
+      "connectionString": "{postgresdb.connectionString};Database=tictactoedb"
+    },
+    "redis": {
+      "type": "container.v0",
+      "connectionString": "{redis.bindings.tcp.host}:{redis.bindings.tcp.port}",
+      "image": "docker.io/library/redis:7.2",
+      "bindings": {
+        "tcp": {
+          "scheme": "tcp",
+          "protocol": "tcp",
+          "transport": "tcp",
+          "targetPort": 6379
+        }
+      }
+    },
+    "databasemigrator": {
+      "type": "project.v0",
+      "path": "DataBaseMigrator/DataBaseMigrator.csproj",
+      "env": {
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES": "true",
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES": "true",
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY": "in_memory",
+        "ConnectionStrings__tictactoedb": "{tictactoedb.connectionString}"
+      }
+    },
+    "tictactoe-orleans": {
+      "type": "project.v0",
+      "path": "TicTacToe_Orleans/TicTacToe_Orleans.csproj",
+      "env": {
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES": "true",
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES": "true",
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY": "in_memory",
+        "ASPNETCORE_FORWARDEDHEADERS_ENABLED": "true",
+        "HTTP_PORTS": "{tictactoe-orleans.bindings.http.targetPort}",
+        "ConnectionStrings__redis": "{redis.connectionString}",
+        "ConnectionStrings__tictactoedb": "{tictactoedb.connectionString}",
+        "Orleans__Clustering__ProviderType": "Redis",
+        "Orleans__Clustering__ServiceKey": "redis",
+        "Orleans__ClusterId": "{orleans-cluster-cluster-id.value}",
+        "Orleans__ServiceId": "{orleans-cluster-service-id.value}",
+        "Orleans__EnableDistributedTracing": "true",
+        "Orleans__Endpoints__SiloPort": "{tictactoe-orleans.bindings.orleans-silo.targetPort}",
+        "Orleans__Endpoints__GatewayPort": "{tictactoe-orleans.bindings.orleans-gateway.targetPort}",
+        "ORLEANS-SILO-DASHBOARD": "{tictactoe-orleans.bindings.ORLEANS-SILO-DASHBOARD.targetPort}",
+        "services__webclient__http__0": "{webclient.bindings.http.url}"
+      },
+      "bindings": {
+        "http": {
+          "scheme": "http",
+          "protocol": "tcp",
+          "transport": "http"
+        },
+        "https": {
+          "scheme": "https",
+          "protocol": "tcp",
+          "transport": "http"
+        },
+        "orleans-silo": {
+          "scheme": "tcp",
+          "protocol": "tcp",
+          "transport": "tcp",
+          "targetPort": 8000
+        },
+        "orleans-gateway": {
+          "scheme": "tcp",
+          "protocol": "tcp",
+          "transport": "tcp",
+          "targetPort": 8001
+        },
+        "ORLEANS-SILO-DASHBOARD": {
+          "scheme": "http",
+          "protocol": "tcp",
+          "transport": "http",
+          "port": 977,
+          "targetPort": 8002
+        }
+      }
+    },
+    "webclient": {
+      "type": "executable.v0",
+      "workingDirectory": "webapp",
+      "command": "npm",
+      "args": [
+        "run",
+        "dev"
+      ],
+      "env": {
+        "NODE_ENV": "development",
+        "PORT": "{webclient.bindings.http.targetPort}",
+        "services__tictactoe-orleans__http__0": "{tictactoe-orleans.bindings.http.url}",
+        "services__tictactoe-orleans__https__0": "{tictactoe-orleans.bindings.https.url}",
+        "services__tictactoe-orleans__orleans-silo__0": "{tictactoe-orleans.bindings.orleans-silo.url}",
+        "services__tictactoe-orleans__orleans-gateway__0": "{tictactoe-orleans.bindings.orleans-gateway.url}",
+        "services__tictactoe-orleans__ORLEANS-SILO-DASHBOARD__0": "{tictactoe-orleans.bindings.ORLEANS-SILO-DASHBOARD.url}"
+      },
+      "bindings": {
+        "http": {
+          "scheme": "http",
+          "protocol": "tcp",
+          "transport": "http",
+          "port": 3000,
+          "targetPort": 8003,
+          "external": true
+        }
+      }
+    },
+    "postgresdb-password": {
+      "type": "parameter.v0",
+      "value": "{postgresdb-password.inputs.value}",
+      "inputs": {
+        "value": {
+          "type": "string",
+          "secret": true,
+          "default": {
+            "generate": {
+              "minLength": 22
+            }
+          }
+        }
+      }
+    },
+    "orleans-cluster-cluster-id": {
+      "type": "parameter.v0",
+      "value": "{orleans-cluster-cluster-id.inputs.value}",
+      "inputs": {
+        "value": {
+          "type": "string",
+          "default": {
+            "generate": {
+              "minLength": 25,
+              "upper": false,
+              "special": false
+            }
+          }
+        }
+      }
+    },
+    "orleans-cluster-service-id": {
+      "type": "parameter.v0",
+      "value": "{orleans-cluster-service-id.inputs.value}",
+      "inputs": {
+        "value": {
+          "type": "string",
+          "default": {
+            "generate": {
+              "minLength": 25,
+              "upper": false,
+              "special": false
+            }
+          }
+        }
+      }
+    }
+  }
+}

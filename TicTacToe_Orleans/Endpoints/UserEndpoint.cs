@@ -11,64 +11,39 @@ namespace TicTacToe_Orleans.Endpoints
         {
             var group = routes.MapGroup("/api/orleans/User");
 
-            group.MapPost("/", async Task<Results<Created<User>, ProblemHttpResult>> (User user, ApplicationDbContext db, ILogger<UserEndpoint> logger) =>
+            group.MapPost("/", async Task<Created<User>> (User user, ApplicationDbContext db, ILogger<UserEndpoint> logger) =>
             {
-                try
-                {
-                    var userExists = await db.Users
-                        .Where(model => model.Id == user.Id)
-                        .AnyAsync();
+                var userExists = await db.Users
+                    .Where(model => model.Id == user.Id)
+                    .AnyAsync();
 
-                    if (!userExists)
-                    {
-                        db.Users.Add(user);
-                        await db.SaveChangesAsync();
-                    }
-
-                    return TypedResults.Created($"/api/orleans/User/{user.Id}", user);
-                }
-                catch (Exception ex)
+                if (!userExists)
                 {
-                    logger.LogError(ex.Message);
-                    return TypedResults.Problem("An error occurred while processing your request.");
+                    db.Users.Add(user);
+                    await db.SaveChangesAsync();
                 }
+
+                return TypedResults.Created($"/api/orleans/User/{user.Id}", user);
 
             })
             .RequireAuthorization(AuthSecretRequirement.Policy);
 
-            group.MapGet("/", async Task<Results<Ok<List<User>>, ProblemHttpResult>> (ApplicationDbContext db, HttpContext context, ILogger<UserEndpoint> logger) =>
+            group.MapGet("/", async Task<Ok<List<User>>> (ApplicationDbContext db, HttpContext context, ILogger<UserEndpoint> logger) =>
             {
-                try
-                {
-                    return TypedResults.Ok(await db.Users.ToListAsync());
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex.Message);
-                    return TypedResults.Problem("An error occurred while processing your request.");
-                }
+                return TypedResults.Ok(await db.Users.ToListAsync());
 
             })
             .WithName("GetAllUsers").RequireAuthorization(CookieHandlerRequirement.Policy);
 
-            group.MapGet("/{id}", async Task<Results<Ok<User>, NotFound, ProblemHttpResult>> (string id, ApplicationDbContext db, ILogger<UserEndpoint> logger) =>
+            group.MapGet("/{id}", async Task<Results<Ok<User>, NotFound>> (string id, ApplicationDbContext db, ILogger<UserEndpoint> logger) =>
             {
-                try
-                {
-                    return await db.Users.AsNoTracking()
-                        .FirstOrDefaultAsync(model => model.Id == id)
-                        is User model
-                            ? TypedResults.Ok(model)
-                            : TypedResults.NotFound();
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex.Message);
-                    return TypedResults.Problem("An error occurred while processing your request.");
-                }
+                return await db.Users.AsNoTracking()
+                    .FirstOrDefaultAsync(model => model.Id == id)
+                    is User model
+                        ? TypedResults.Ok(model)
+                        : TypedResults.NotFound();
             })
            .RequireAuthorization(CookieHandlerRequirement.Policy);
-
         }
     }
 }

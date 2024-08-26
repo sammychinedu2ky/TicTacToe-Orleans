@@ -11,24 +11,21 @@ using TicTacToe_Orleans.Endpoints;
 using TicTacToe_Orleans.Hubs;
 var builder = WebApplication.CreateBuilder(args);
 var secret = builder.Configuration["AUTH_SECRET"]!;
-var dbConnectionString = builder.Configuration.GetConnectionString("ApplicationDbContext")!;
 var postgresConnectionString = builder.Configuration.GetConnectionString("tictactoedb")!;
 var client = builder.Configuration["CLIENT"]!;
 var dashBoardPort = builder.Configuration["ORLEANS-SILO-DASHBOARD"]!;
 var orleansPort = builder.Configuration["ORLEANS-SILO-PORT"]!;
 var gatewayPort = builder.Configuration["ORLEANS-GATEWAY-PORT"];
 var redisConnectionString = builder.Configuration.GetConnectionString("redis")!;
-if (builder.Environment.IsEnvironment("Production"))
-{
-    ArgumentNullException.ThrowIfNullOrEmpty(postgresConnectionString);
-    ArgumentNullException.ThrowIfNullOrEmpty(secret);
-    //ArgumentNullException.ThrowIfNullOrEmpty(dbConnectionString);
-    ArgumentNullException.ThrowIfNullOrEmpty(client);
-    ArgumentNullException.ThrowIfNullOrEmpty(dashBoardPort);
-    ArgumentNullException.ThrowIfNullOrEmpty(orleansPort);
-    ArgumentNullException.ThrowIfNullOrEmpty(gatewayPort);
-    ArgumentNullException.ThrowIfNullOrEmpty(redisConnectionString);
-}
+
+ArgumentNullException.ThrowIfNullOrEmpty(postgresConnectionString);
+ArgumentNullException.ThrowIfNullOrEmpty(secret);
+ArgumentNullException.ThrowIfNullOrEmpty(client);
+ArgumentNullException.ThrowIfNullOrEmpty(dashBoardPort);
+ArgumentNullException.ThrowIfNullOrEmpty(orleansPort);
+ArgumentNullException.ThrowIfNullOrEmpty(gatewayPort);
+ArgumentNullException.ThrowIfNullOrEmpty(redisConnectionString);
+
 int.TryParse(dashBoardPort, out var dashBoardPortInt);
 int.TryParse(orleansPort, out var orleansPortInt);
 int.TryParse(gatewayPort, out var gatewayPortInt);
@@ -38,7 +35,7 @@ builder.AddKeyedRedisClient("redis");
 builder.UseOrleans(siloBuilder =>
 {
 
-   
+
     siloBuilder.Services.AddDbContextFactory<ApplicationDbContext>((Action<DbContextOptionsBuilder>?)(options =>
     options.UseNpgsql(postgresConnectionString,
     npgsqlOptionsAction: handleDbRetry()

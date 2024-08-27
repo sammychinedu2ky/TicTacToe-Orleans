@@ -27,8 +27,6 @@ export default function StartGame() {
 
     let handleSetEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
-        console.log('cleaning')
-
         setOpponentEmail(e.target.value)
     }
 

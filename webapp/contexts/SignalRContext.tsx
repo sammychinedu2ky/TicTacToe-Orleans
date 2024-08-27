@@ -8,7 +8,6 @@ interface SignalRProviderProps {
 }
 export const SignalRProvider = ({ children}:SignalRProviderProps) => {
   const [connection, setConnection] = useState<signalR.HubConnection|null>(null);
-console.log(process.env.NEXT_PUBLIC_API_SERVER_URL)
   useEffect(() => {
     const newConnection = new signalR.HubConnectionBuilder()
       .withUrl(`/api/orleans/gameRoomHub`,{

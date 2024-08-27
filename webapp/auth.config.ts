@@ -7,11 +7,7 @@ import { redirect } from "next/navigation";
 export const authOptions = {
   callbacks: {
     authorized({ request, auth }) {
-      //console.log('authoriszed')
-      // remove game room from being protected
-      // const protectedRoutes = ["/game-room", "/history"]
       const protectedRoutes = [ "/history"]
-      console.log("swaaaaaaaaaaaaaaaac")
       const isLoggedIn = !!auth
       let containsProtectedRoute = false;
       for (let route of protectedRoutes) {
@@ -27,10 +23,7 @@ export const authOptions = {
       return true
     },
     async jwt({ token }) {
-        
-      console.log('tokoen in ', token)
       if (token.newUser == undefined ) {
-        // add to database
         try{
         const req =  await fetch(`${process.env.API_SERVER_URL}/api/orleans/user`, {
             method: 'POST',
@@ -44,13 +37,9 @@ export const authOptions = {
           token.newUser = false
         }
         catch(e){
-          console.log(e)
           // redirect to home page during error 
           return redirect('/') 
         }
-      
-        console.log('new user')
-        console.log(token)
       }
       return token
     },
@@ -74,8 +63,6 @@ export const authOptions = {
   },
   jwt: {
     async encode({ token, secret }) {
-      //  console.log('run')
-     // console.log(token)
       if (!token) {
         throw new Error("No token provided")
       }

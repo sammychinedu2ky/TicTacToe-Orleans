@@ -10,7 +10,6 @@ import { KeyedMutator } from "swr";
 
 export default function InvitationCard({ invitation, mutate }: { invitation: InvitationDTO, mutate: KeyedMutator<any> }) {
     const router = useRouter();
-   console.log(invitation)
     const notify = (errorMessage: string) => toast(errorMessage)
     const handleInvitation = async (accepted: boolean) => {
         var url = `/api/orleans/Invitations`

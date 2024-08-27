@@ -23,7 +23,6 @@ export default async function Header() {
     }
     const signOutFromGitHub = async () => {
         "use server"
-        console.log("signing out from github ...............")
        return redirect("/api/auth/signout");
       //return signOut()
     }

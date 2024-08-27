@@ -1,6 +1,3 @@
-using Microsoft.AspNetCore.DataProtection;
-using Microsoft.Extensions.Configuration;
-
 var builder = DistributedApplication.CreateBuilder(args);
 
 var db = builder.AddPostgres("postgresdb")
@@ -18,10 +15,10 @@ var backend = builder.AddProject<Projects.TicTacToe_Orleans>("tictactoe-orleans"
     .WithReference(orleans)
     .WithReplicas(3)
     .WithEndpoint(name: "ORLEANS-SILO-DASHBOARD", port: 977, scheme: "http", env: "ORLEANS-SILO-DASHBOARD");
-   
+
 
 var frontend = builder.AddNpmApp("webclient", "../webapp", "dev")
-    .WithHttpEndpoint(env: "PORT", port:3000)
+    .WithHttpEndpoint(env: "PORT", port: 3000)
     .WithExternalHttpEndpoints()
     .WithReference(backend);
 

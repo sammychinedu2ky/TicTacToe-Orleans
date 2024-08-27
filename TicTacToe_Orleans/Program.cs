@@ -2,9 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
-using Orleans.Configuration;
 using StackExchange.Redis;
-using System.Net;
 using System.Text.Json;
 using TicTacToe_Orleans.Authorization;
 using TicTacToe_Orleans.Endpoints;
@@ -14,22 +12,15 @@ var secret = builder.Configuration["AUTH_SECRET"]!;
 var postgresConnectionString = builder.Configuration.GetConnectionString("tictactoedb")!;
 var client = builder.Configuration["CLIENT"]!;
 var dashBoardPort = builder.Configuration["ORLEANS-SILO-DASHBOARD"]!;
-var orleansPort = builder.Configuration["ORLEANS-SILO-PORT"]!;
-var gatewayPort = builder.Configuration["ORLEANS-GATEWAY-PORT"];
 var redisConnectionString = builder.Configuration.GetConnectionString("redis")!;
 
 ArgumentNullException.ThrowIfNullOrEmpty(postgresConnectionString);
 ArgumentNullException.ThrowIfNullOrEmpty(secret);
 ArgumentNullException.ThrowIfNullOrEmpty(client);
 ArgumentNullException.ThrowIfNullOrEmpty(dashBoardPort);
-ArgumentNullException.ThrowIfNullOrEmpty(orleansPort);
-ArgumentNullException.ThrowIfNullOrEmpty(gatewayPort);
 ArgumentNullException.ThrowIfNullOrEmpty(redisConnectionString);
 
 int.TryParse(dashBoardPort, out var dashBoardPortInt);
-int.TryParse(orleansPort, out var orleansPortInt);
-int.TryParse(gatewayPort, out var gatewayPortInt);
-//builder.AddRedisClient("redis");
 builder.AddServiceDefaults();
 builder.AddKeyedRedisClient("redis");
 builder.UseOrleans(siloBuilder =>
@@ -40,33 +31,13 @@ builder.UseOrleans(siloBuilder =>
     options.UseNpgsql(postgresConnectionString,
     npgsqlOptionsAction: handleDbRetry()
     )));
-    //siloBuilder.Configure<EndpointOptions>(options =>
-    //{
-    //    // Port to use for silo-to-silo
-    //   // options.AdvertisedIPAddress = IPAddress.Loopback;
-    //    options.SiloPort = orleansPortInt;
-    //   // options.GatewayPort = gatewayPortInt;
-    //});
-    //siloBuilder.UseRedisClustering( configuration: o =>
-    //{
-    //    o.ConnectionString = redisConnectionString;
-    //    o.Database = 0;
 
-    //});
-    if (builder.Environment.IsDevelopment())
-    {
-        siloBuilder.ConfigureEndpoints(Random.Shared.Next(10_000, 50_000), Random.Shared.Next(10_000, 50_000));
-    }
     siloBuilder.UseDashboard(option =>
     {
         option.Port = dashBoardPortInt;
     });
 });
-//IdentityModelEventSource.ShowPII = true;
-//builder.Services.AddDbContext<ApplicationDbContext>(options =>
-//    options.UseNpgsql(dbConnectionString,
-//    npgsqlOptionsAction: handleDbRetry()
-//    ));
+
 
 builder.Services.Configure<CookieHandlerAuthOptions>(options =>
 {
@@ -89,8 +60,6 @@ builder.Services.AddAuthorization(options =>
         r.AddRequirements(new CookieHandlerRequirement(secret));
         // r.RequireAuthenticatedUser();
         // r.AddAuthenticationSchemes(CookieHandlerAuthOptions.Scheme);
-
-
     });
 });
 builder.Services.Configure<JsonOptions>(options =>

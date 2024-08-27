@@ -54,10 +54,7 @@ export default function Page({ params }: { params: { gameId: string } }) {
     let isAuthenticated = session.status == "authenticated"
     useEffect(() => {
         if (connection && isAuthenticated) {
-            console.log("connection iddddddddddd", connection.connectionId)
-            console.log('swacky')
             connection.on("ReceiveGameState", (gameRoomDTO: GameRoomDTO) => {
-                console.log("received invite realtime", gameRoomDTO)
                 if (gameRoomDTO.winner?.length > 0) {
                     setModalOpen(true)
                 }
@@ -66,11 +63,9 @@ export default function Page({ params }: { params: { gameId: string } }) {
             })
             connection.on("ReceiveError", (error: string) => {
                 notify(error)
-                console.log("error", error)
                 //router.push("/")
             })
             connection.on("Connected", () => {
-                console.log("connnnnnnnnnnnnnnnnnected")
                 connection.invoke("JoinGameRoom", gameId)
             })
         }
@@ -78,8 +73,6 @@ export default function Page({ params }: { params: { gameId: string } }) {
     }, [connection])
 
     let flatBoard = gameState.board.flat()
-    let turn = gameState.turn
-    console.log(flatBoard)
 
 
     function handleBoardClick(index: number, cell: string): void {
@@ -103,7 +96,6 @@ export default function Page({ params }: { params: { gameId: string } }) {
         let [row, col] = customConverter(index)
         let newBoard: GameRoomDTO = { ...gameState }
         newBoard.board[row][col] = gameState["turn"]
-        console.log('newboarddddd', newBoard)
         
         if(connection?.state === "Connected") connection?.invoke("SendGameState", gameId, newBoard)
         else notify("Yet to connect to server")
